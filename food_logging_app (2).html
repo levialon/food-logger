@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>יומן תזונה</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Heebo', sans-serif;
+            direction: rtl;
+            text-align: right;
+            background-color: #f8f9fa;
+            padding-bottom: 100px;
+            overflow-x: hidden;
+        }
+        
+        .app-container {
+            width: 400vw;
+            height: 100vh;
+            display: flex;
+            transition: transform 0.3s ease-out;
+            touch-action: pan-y;
+        }
+        
+        .page {
+            width: 100vw;
+            height: 100%;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        
+        .meal-card {
+            transition: all 0.3s ease-in-out;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 12px;
+            height: 100%;
+        }
+        
+        .meal-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .meal-card.expanded {
+            transform: scale(1.02);
+            z-index: 10;
+            position: relative;
+        }
+        
+        .card-closed {
+            height: 200px;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: end;
+            border-radius: 12px;
+        }
+        
+        .card-overlay {
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            width: 100%;
+            padding: 1rem;
+            color: white;
+            border-radius: 0 0 12px 12px;
+        }
+        
+        .meal-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        .card-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+        
+        .card-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+            background: white;
+        }
+        
+        .card-details.show {
+            max-height: 400px;
+        }
+        
+        .card-details-content {
+            padding: 1rem;
+        }
+        
+        .add-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+        
+        .ingredients-text {
+            font-size: 0.9rem;
+            color: #6c757d;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            margin-left: 0.25rem;
+        }
+        
+        .container-fluid {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 0;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .expand-icon {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+            color: #333;
+            font-size: 0.8rem;
+        }
+        
+        .expand-icon.rotated {
+            transform: rotate(180deg);
+        }
+        
+        .search-container {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #f8f9fa;
+            padding: 0.5rem 0;
+            margin: -0.5rem 0 1rem 0;
+        }
+        
+        .search-container .form-control {
+            border-color: #dee2e6;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .search-container .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .search-container .input-group-text {
+            border-color: #dee2e6;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .meal-card.hidden {
+            display: none;
+        }
+        
+        .no-results {
+            text-align: center;
+            color: #6c757d;
+            padding: 2rem;
+            font-size: 1.1rem;
+        }
+        
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #dee2e6;
+        }
+        
+        .usage-counter {
+            background: rgba(255,255,255,0.2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            backdrop-filter: blur(5px);
+        }
+        
+        .calories-info {
+            background: rgba(255,255,255,0.2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            backdrop-filter: blur(5px);
+        }
+        
+        /* Daily Summary Styles */
+        .daily-summary {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .date-header {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #495057;
+        }
+        
+        .calorie-summary {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .calorie-summary.green {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .calorie-summary.yellow {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .calorie-summary.red {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .meal-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            border-right: 4px solid #667eea;
+        }
+        
+        .meal-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .meal-name {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .meal-calories {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .meal-time {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .page-indicator {
+            position: fixed;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 1000;
+        }
+        
+        .page-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .page-dot.active {
+            background: white;
+            transform: scale(1.5);
+        }
+        
+        /* RTL Bootstrap fixes */
+        .modal-header .btn-close {
+            margin-left: auto;
+            margin-right: 0;
+        }
+        
+        .row {
+            margin-left: -0.5rem;
+            margin-right: -0.5rem;
+        }
+        
+        .col-6 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Indicator -->
+    <div class="page-indicator">
+        <div class="page-dot active" data-page="0"></div>
+        <div class="page-dot" data-page="1"></div>
+        <div class="page-dot" data-page="2"></div>
+        <div class="page-dot" data-page="3"></div>
+    </div>
+
+    <!-- App Container with 4 pages -->
+    <div class="app-container" id="appContainer">
+        <!-- Page 1: Meals Library (Current) -->
+        <div class="page">
+            <div class="header">
+                <div class="container-fluid">
+                    <h1 class="h3 mb-0 text-center">
+                        <i class="fas fa-utensils me-2"></i>
+                        יומן תזונה
+                    </h1>
+                </div>
+            </div>
+
+            <div class="container-fluid px-3">
+                <div class="search-container mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0 ps-0" id="searchInput" 
+                               placeholder="חפש ארוחה..." onkeyup="filterMeals()">
+                        <button class="btn btn-outline-secondary" type="button" id="clearSearch" onclick="clearSearch()" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row g-2" id="mealsGrid">
+                    <!-- Meal cards here (same as before) -->
+                    <div class="col-6">
+                        <div class="meal-card" onclick="toggleCard(this)" data-usage="15">
+                            <div class="card-closed" style="background-image: url('https://picsum.photos/400/400?random=6')">
+                                <div class="expand-icon">
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="card-overlay">
+                                    <h5 class="meal-title">קערת סמותי חלבון</h5>
+                                    <div class="card-stats">
+                                        <span class="calories-info">
+                                            <i class="fas fa-fire me-1"></i>340 קל'
+                                        </span>
+                                        <span class="usage-counter">
+                                            <i class="fas fa-utensils me-1"></i>15 פעמים
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-details">
+                                <div class="card-details-content">
+                                    <p class="ingredients-text">
+                                        פירות יער קפואים, אבקת חלבון, בננה, יוגורט יווני, גרנולה, זרעי צ'יה, דבש, חמאת שקדים
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex">
+                                            <span class="badge bg-primary stats-badge">
+                                                <i class="fas fa-fire me-1"></i>340 קלוריות
+                                            </span>
+                                            <span class="badge bg-success stats-badge">
+                                                <i class="fas fa-seedling me-1"></i>28 גרם פחמימות
+                                            </span>
+                                        </div>
+                                        <span class="badge bg-secondary stats-badge">
+                                            <i class="fas fa-utensils me-1"></i>נוצל 15 פעמים
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="meal-card" onclick="toggleCard(this)" data-usage="12">
+                            <div class="card-closed" style="background-image: url('https://picsum.photos/400/400?random=3')">
+                                <div class="expand-icon">
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="card-overlay">
+                                    <h5 class="meal-title">קערת סלמון טריאקי</h5>
+                                    <div class="card-stats">
+                                        <span class="calories-info">
+                                            <i class="fas fa-fire me-1"></i>580 קל'
+                                        </span>
+                                        <span class="usage-counter">
+                                            <i class="fas fa-utensils me-1"></i>12 פעמים
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-details">
+                                <div class="card-details-content">
+                                    <p class="ingredients-text">
+                                        סלמון בגריל, אורז מלא, ברוקולי מאודה, אדמאמה, גזר, רוטב טריאקי, זרעי שומשום
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex">
+                                            <span class="badge bg-primary stats-badge">
+                                                <i class="fas fa-fire me-1"></i>580 קלוריות
+                                            </span>
+                                            <span class="badge bg-success stats-badge">
+                                                <i class="fas fa-seedling me-1"></i>45 גרם פחמימות
+                                            </span>
+                                        </div>
+                                        <span class="badge bg-secondary stats-badge">
+                                            <i class="fas fa-utensils me-1"></i>נוצל 12 פעמים
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="meal-card" onclick="toggleCard(this)" data-usage="8">
+                            <div class="card-closed" style="background-image: url('https://picsum.photos/400/400?random=1')">
+                                <div class="expand-icon">
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="card-overlay">
+                                    <h5 class="meal-title">סלט עוף בגריל</h5>
+                                    <div class="card-stats">
+                                        <span class="calories-info">
+                                            <i class="fas fa-fire me-1"></i>420 קל'
+                                        </span>
+                                        <span class="usage-counter">
+                                            <i class="fas fa-utensils me-1"></i>8 פעמים
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-details">
+                                <div class="card-details-content">
+                                    <p class="ingredients-text">
+                                        עלים ירוקים מעורבים, חזה עוף בגריל, עגבניות שרי, מלפפון, בצל אדום, גבינת פטה, רוטב ויניגרט עם שמן זית
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex">
+                                            <span class="badge bg-primary stats-badge">
+                                                <i class="fas fa-fire me-1"></i>420 קלוריות
+                                            </span>
+                                            <span class="badge bg-success stats-badge">
+                                                <i class="fas fa-seedling me-1"></i>12 גרם פחמימות
+                                            </span>
+                                        </div>
+                                        <span class="badge bg-secondary stats-badge">
+                                            <i class="fas fa-utensils me-1"></i>נוצל 8 פעמים
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="meal-card" onclick="toggleCard(this)" data-usage="6">
+                            <div class="card-closed" style="background-image: url('https://picsum.photos/400/400?random=5')">
+                                <div class="expand-icon">
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="card-overlay">
+                                    <h5 class="meal-title">פסטה אלפרדו עם עוף</h5>
+                                    <div class="card-stats">
+                                        <span class="calories-info">
+                                            <i class="fas fa-fire me-1"></i>720 קל'
+                                        </span>
+                                        <span class="usage-counter">
+                                            <i class="fas fa-utensils me-1"></i>6 פעמים
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-details">
+                                <div class="card-details-content">
+                                    <p class="ingredients-text">
+                                        פטוצ'יני, עוף בגריל, רוטב אלפרדו, גבינת פרמזן, שום, שמנת מתוקה, פלפל שחור, פטרוזיליה
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex">
+                                            <span class="badge bg-primary stats-badge">
+                                                <i class="fas fa-fire me-1"></i>720 קלוריות
+                                            </span>
+                                            <span class="badge bg-success stats-badge">
+                                                <i class="fas fa-seedling me-1"></i>68 גרם פחמימות
+                                            </span>
+                                        </div>
+                                        <span class="badge bg-secondary stats-badge">
+                                            <i class="fas fa-utensils me-1"></i>נוצל 6 פעמים
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="meal-card" onclick="toggleCard(this)" data-usage="5">
+                            <div class="card-closed" style="background-image: url('https://picsum.photos/400/400?random=4')">
+                                <div class="expand-icon">
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="card-overlay">
+                                    <h5 class="meal-title">ראפ ירקות ים-תיכוני</h5>
+                                    <div class="card-stats">
+                                        <span class="calories-info">
+                                            <i class="fas fa-fire me-1"></i>380 קל'
+                                        </span>
+                                        <span class="usage-counter">
+                                            <i class="fas fa-utensils me-1"></i>5 פעמים
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-details">
+                                <div class="card-details-content">
+                                    <p class="ingredients-text">
+                                        טורטייה מקמח מלא, חומוס, פלפל אדום צלוי, תרד, מלפפון, זיתים, גבינת פטה, עגבניות מיובשות
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex">
+                                            <span class="badge bg-primary stats-badge">
+                                                <i class="fas fa-fire me-1"></i>380 קלוריות
+                                            </span>
+                                            <span class="badge bg-success stats-badge">
+                                                <i class="fas fa-seedling me-1"></i>52 גרם פחמימות
+                                            </span>
+                                        </div>
+                                        <span class="badge bg-secondary stats-badge">
+                                            <i class="fas fa-utensils me-1"></i>נוצל 5 פעמים
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="meal-card" onclick="toggleCard(this)" data-usage="3">
+                            <div class="card-closed" style="background-image: url('https://picsum.photos/400/400?random=2')">
+                                <div class="expand-icon">
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="card-overlay">
+                                    <h5 class="meal-title">פיצה מרגריטה</h5>
+                                    <div class="card-stats">
+                                        <span class="calories-info">
+                                            <i class="fas fa-fire me-1"></i>650 קל'
+                                        </span>
+                                        <span class="usage-counter">
+                                            <i class="fas fa-utensils me-1"></i>3 פעמים
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-details">
+                                <div class="card-details-content">
+                                    <p class="ingredients-text">
+                                        בצק פיצה, מוצרלה טרייה, עגבניות סן מרצאנו, בזיליקום טרי, שמן זית כתית קר, מלח ים
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex">
+                                            <span class="badge bg-primary stats-badge">
+                                                <i class="fas fa-fire me-1"></i>650 קלוריות
+                                            </span>
+                                            <span class="badge bg-success stats-badge">
+                                                <i class="fas fa-seedling me-1"></i>78 גרם פחמימות
+                                            </span>
+                                        </div>
+                                        <span class="badge bg-secondary stats-badge">
+                                            <i class="fas fa-utensils me-1"></i>נוצל 3 פעמים
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="noResultsMessage" class="no-results" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <div>לא נמצאו ארוחות התואמות לחיפוש</div>
+                    <small>נסה לחפש במילים אחרות</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 2: Today's Summary -->
+        <div class="page">
+            <div class="header">
+                <div class="container-fluid">
+                    <h1 class="h3 mb-0 text-center">
+                        <i class="fas fa-calendar-day me-2"></i>
+                        היום
+                    </h1>
+                </div>
+            </div>
+
+            <div class="container-fluid px-3">
+                <div class="daily-summary">
+                    <div class="date-header">
+                        <i class="fas fa-calendar me-2"></i>
+                        שבת, 21 יוני 2025
+                    </div>
+                    
+                    <div class="calorie-summary red">
+                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">
+                            <i class="fas fa-fire me-2"></i>
+                            1,890 / 1,700 קלוריות
+                        </div>
+                        <div>עבר את היעד ב-190 קלוריות</div>
+                    </div>
+
+                    <div class="meal-item">
+                        <div class="meal-item-header">
+                            <span class="meal-name">קערת סמותי חלבון</span>
+                            <span class="meal-calories">340 קל'</span>
+                        </div>
+                        <div class="meal-time">
+                            <i class="fas fa-clock me-1"></i>
+                            07:30 - ארוחת בוקר
+                        </div>
+                    </div>
+
+                    <div class="meal-item">
+                        <div class="meal-item-header">
+                            <span class="meal-name">סלט עוף בגריל</span>
+                            <span class="meal-calories">420 קל'</span>
+                        </div>
+                        <div class="meal-time">
+                            <i class="fas fa-clock me-1"></i>
+                            13:15 - ארוחת צהריים
+                        </div>
+                    </div>
+
+                    <div class="meal-item">
+                        <div class="meal-item-header">
+                            <span class="meal-name">קערת סלמון טריאקי</span>
+                            <span class="meal-calories">580 קל'</span>
+                        </div>
+                        <div class="meal-time">
+                            <i class="fas fa-clock me-1"></i>
+                            19:45 - ארוחת ערב
+                        </div>
+                    </div>
+
+                    <div class="meal-item">
+                        <div class="meal-item-header">
+                            <span class="meal-name">יוגורט יווני עם אגוזים</span>
+                            <span class="meal-calories">190 קל'</span>
+                        </div>
+                        <div class="meal-time">
+                            <i class="fas fa-clock me-1"></i>
+                            21:30 - חטיף
+                        </div>
+                    </div>
+
+                    <div class="meal-item">
+                        <div class="meal-item-header">
+                            <span class="meal-name">תפוח וחמאת בוטנים</span>
+                            <span class="meal-calories">160 קל'</span>
+                        </div>
+                        <div class="meal-time">
+                            <i class="fas fa-clock me-1"></i>
+                            15:20 - חטיף
+                        </div>
+                    </div>
+
+                    <div class="meal-item">
+                        <div class="meal-item-header">
+                            <span class="meal-name">קפה עם חלב</span>
+                            <span class="meal-calories">50 קל'</span>
+                        </div>
+                        <div class="meal-time">
+                            <i class="fas fa-clock me-1"></i>
+                            08:00 - משקה
+                        </div>
+                    </div>
+
+                    <div class="meal-item">
+                        <div class="meal-item-header">
+                            <span class="meal-name">בננה</span>
+                            <span class="meal-calories">90 קל'</span>
+                        </div>
+                        <div class="meal-time">
+                            <i class="fas fa-clock me-1"></i>
+                            
