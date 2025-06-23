@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -47,9 +46,15 @@
         }
         
         .meal-card.expanded {
-            transform: scale(1.02);
-            z-index: 10;
-            position: relative;
+            position: absolute;
+            width: calc(100vw - 2rem);
+            max-width: 480px;
+            left: 50%;
+            transform: translateX(-50%) scale(1.02);
+            z-index: 100;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            border-radius: 12px;
+            background: white;
         }
         
         .card-closed {
@@ -387,13 +392,13 @@
         }
         
         .row {
-            margin-left: -0.5rem;
-            margin-right: -0.5rem;
+            margin-left: -0.33rem;
+            margin-right: -0.33rem;
         }
         
-        .col-6 {
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
+        .col-4 {
+            padding-left: 0.33rem;
+            padding-right: 0.33rem;
         }
         
         .d-flex.gap-2 > * {
@@ -1117,7 +1122,7 @@
         // Create HTML for a meal card
         function createMealCard(meal) {
             return `
-                <div class="col-6">
+                <div class="col-4">
                     <div class="meal-card" onclick="toggleCard(this)" data-meal-id="${meal.id}" data-usage="${meal.usageCount}">
                         <div class="card-closed" style="background-image: url('${meal.image}')">
                             <div class="expand-icon">
