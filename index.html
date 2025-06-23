@@ -22,12 +22,17 @@
             width: 300vw;
             display: flex;
             transition: transform 0.4s ease-out;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
         }
         
         .page {
             width: 100vw;
             flex-shrink: 0;
             min-height: calc(100vh - 120px);
+            flex: 0 0 100%; /* each tab takes full width */
+            scroll-snap-align: start;
         }
         
         .meal-card {
