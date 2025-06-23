@@ -19,19 +19,26 @@
             overscroll-behavior-x: none;
         }
         
-        .app-container {
-            width: 300vw;
-            display: flex;
-            transition: transform 0.4s ease-out;
-        }
+.app-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    direction: rtl;
+    width: 100vw; /* let it overflow naturally */
+    height: 100%;
+}
+
         
-        .page {
-            width: 100vw;
-            flex-shrink: 0;
-            min-height: calc(100vh - 120px);
-            overflow-x: hidden !important;
-            touch-action: pan-y !important;
-       }
+.page {
+    flex: 0 0 100vw;
+    scroll-snap-align: start;
+    overflow-x: hidden;
+    min-height: calc(100vh - 120px);
+    touch-action: pan-y;
+}
+
         
         .meal-card {
             transition: all 0.3s ease-in-out;
@@ -1086,7 +1093,11 @@
             
             // Move to the page
             const container = document.getElementById('appContainer');
-            container.style.transform = `translateX(${pageIndex * 100}vw)`;
+    
+            const page = container.querySelectorAll('.page')[pageIndex];
+            page.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+
+    //        container.style.transform = `translateX(${pageIndex * 100}vw)`;
             
             // Show/hide add button based on page
             const addBtn = document.getElementById('addBtn');
