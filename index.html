@@ -408,6 +408,24 @@
         .d-flex.gap-2 > *:first-child {
             margin-left: 0;
         }
+        .danger-zone {
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+}
+
+.danger-zone .card {
+    border-color: #dc3545 !important;
+}
+
+.danger-zone .btn-outline-danger:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+#resetDatabaseBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
     </style>
 </head>
 <body>
@@ -454,6 +472,30 @@
                     <small>נסה לחפש במילים אחרות</small>
                 </div>
             </div>
+            <!-- Reset Database Section - Add at the bottom of meals page -->
+          <div class="container-fluid px-3 mt-4">
+              <div class="danger-zone">
+                  <div class="card border-danger">
+                      <div class="card-header bg-danger text-white">
+                          <h6 class="mb-0">
+                              <i class="fas fa-exclamation-triangle me-2"></i>
+                              אזור מסוכן
+                          </h6>
+                      </div>
+                      <div class="card-body">
+                          <p class="text-muted mb-3">
+                              פעולה זו תמחק לצמיתות את כל הארוחות והנתונים התזונתיים שלך.
+                          </p>
+                          <button type="button" 
+                                  class="btn btn-outline-danger btn-sm" 
+                                  id="resetDatabaseBtn"
+                                  onclick="resetDatabase()">
+                              <i class="fas fa-trash me-2"></i>מחק את כל הנתונים
+                          </button>
+                      </div>
+                  </div>
+              </div>
+          </div>
         </div>
 
         <!-- Page 2: Today's Summary -->
@@ -494,76 +536,8 @@
                             <span class="nutrition-value">95 גרם</span>
                         </div>
                     </div>
-
-                    <div class="meal-item">
-                        <div class="meal-item-header">
-                            <span class="meal-name">קערת סמותי חלבון</span>
-                            <span class="meal-calories">340 קל'</span>
-                        </div>
-                        <div class="meal-time">
-                            <i class="fas fa-clock me-1"></i>07:30 - ארוחת בוקר
-                        </div>
-                    </div>
-
-                    <div class="meal-item">
-                        <div class="meal-item-header">
-                            <span class="meal-name">סלט עוף בגריל</span>
-                            <span class="meal-calories">420 קל'</span>
-                        </div>
-                        <div class="meal-time">
-                            <i class="fas fa-clock me-1"></i>13:15 - ארוחת צהריים
-                        </div>
-                    </div>
-
-                    <div class="meal-item">
-                        <div class="meal-item-header">
-                            <span class="meal-name">פסטה אלפרדו עם עוף</span>
-                            <span class="meal-calories">720 קל'</span>
-                        </div>
-                        <div class="meal-time">
-                            <i class="fas fa-clock me-1"></i>19:45 - ארוחת ערב
-                        </div>
-                    </div>
-
-                    <div class="meal-item">
-                        <div class="meal-item-header">
-                            <span class="meal-name">יוגורט יווני עם אגוזים</span>
-                            <span class="meal-calories">190 קל'</span>
-                        </div>
-                        <div class="meal-time">
-                            <i class="fas fa-clock me-1"></i>21:30 - חטיף
-                        </div>
-                    </div>
-
-                    <div class="meal-item">
-                        <div class="meal-item-header">
-                            <span class="meal-name">תפוח וחמאת בוטנים</span>
-                            <span class="meal-calories">160 קל'</span>
-                        </div>
-                        <div class="meal-time">
-                            <i class="fas fa-clock me-1"></i>15:20 - חטיף
-                        </div>
-                    </div>
-
-                    <div class="meal-item">
-                        <div class="meal-item-header">
-                            <span class="meal-name">קפה עם חלב</span>
-                            <span class="meal-calories">50 קל'</span>
-                        </div>
-                        <div class="meal-time">
-                            <i class="fas fa-clock me-1"></i>08:00 - משקה
-                        </div>
-                    </div>
-
-                    <div class="meal-item">
-                        <div class="meal-item-header">
-                            <span class="meal-name">בננה</span>
-                            <span class="meal-calories">70 קל'</span>
-                        </div>
-                        <div class="meal-time">
-                            <i class="fas fa-clock me-1"></i>16:30 - חטיף
-                        </div>
-                    </div>
+                    
+                    
                 </div>
             </div>
         </div>
@@ -606,56 +580,7 @@
                             <span class="nutrition-value">85 גרם</span>
                         </div>
                     </div>
-
-                    <div class="meal-item">
-                        <div class="meal-item-header">
-                            <span class="meal-name">פיצה מרגריטה</span>
-                            <span class="meal-calories">650 קל'</span>
-                        </div>
-                        <div class="meal-time">
-                            <i class="fas fa-clock me-1"></i>20:00 - ארוחת ערב
-                        </div>
-                    </div>
-
-                    <div class="meal-item">
-                        <div class="meal-item-header">
-                            <span class="meal-name">ראפ ירקות ים-תיכוני</span>
-                            <span class="meal-calories">380 קל'</span>
-                        </div>
-                        <div class="meal-time">
-                            <i class="fas fa-clock me-1"></i>13:00 - ארוחת צהריים
-                        </div>
-                    </div>
-
-                    <div class="meal-item">
-                        <div class="meal-item-header">
-                            <span class="meal-name">ביצים מקושקשות עם טוסט</span>
-                            <span class="meal-calories">320 קל'</span>
-                        </div>
-                        <div class="meal-time">
-                            <i class="fas fa-clock me-1"></i>08:15 - ארוחת בוקר
-                        </div>
-                    </div>
-
-                    <div class="meal-item">
-                        <div class="meal-item-header">
-                            <span class="meal-name">גבינת קוטג' עם מלפפון</span>
-                            <span class="meal-calories">120 קל'</span>
-                        </div>
-                        <div class="meal-time">
-                            <i class="fas fa-clock me-1"></i>16:00 - חטיף
-                        </div>
-                    </div>
-
-                    <div class="meal-item">
-                        <div class="meal-item-header">
-                            <span class="meal-name">שקדים מיקס</span>
-                            <span class="meal-calories">150 קל'</span>
-                        </div>
-                        <div class="meal-time">
-                            <i class="fas fa-clock me-1"></i>22:00 - חטיף
-                        </div>
-                    </div>
+                                       
                 </div>
             </div>
         </div>
@@ -684,6 +609,8 @@
             id="addBtn" data-bs-toggle="modal" data-bs-target="#addMealModal">
         <i class="fas fa-plus fa-lg"></i>
     </button>
+
+
 
     <!-- Add Meal Modal -->
     <div class="modal fade" id="addMealModal" tabindex="-1" aria-labelledby="addMealModalLabel" aria-hidden="true">
@@ -897,6 +824,25 @@
                     request.onerror = () => reject(request.error);
                 });
             }
+
+            async clearAllData() {
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction(['meals', 'dailyLogs'], 'readwrite');
+                    
+                    const clearMeals = transaction.objectStore('meals').clear();
+                    const clearLogs = transaction.objectStore('dailyLogs').clear();
+                    
+                    transaction.oncomplete = () => {
+                        console.log('✅ All database data cleared');
+                        resolve();
+                    };
+                    transaction.onerror = () => {
+                        console.error('❌ Error clearing database:', transaction.error);
+                        reject(transaction.error);
+                    };
+                });
+            }
+
         }
 
         // Initialize database and load initial data
@@ -1384,19 +1330,19 @@
             nutritionSummary.innerHTML = `
                 <div class="nutrition-row">
                     <span class="nutrition-label">
-                        <i class="fas fa-fire me-1"></i>קלוריות
+                        <i class="fas fa-fire me-1"></i> קלוריות
                     </span>
                     <span class="nutrition-value ${isOverGoal ? 'over-goal' : ''}">${totals.calories} / ${db.DAILY_GOAL}</span>
                 </div>
                 <div class="nutrition-row">
                     <span class="nutrition-label">
-                        <i class="fas fa-seedling me-1"></i>פחמימות
+                        <i class="fas fa-seedling me-1"></i> פחמימות
                     </span>
                     <span class="nutrition-value">${totals.carbs} גרם</span>
                 </div>
                 <div class="nutrition-row">
                     <span class="nutrition-label">
-                        <i class="fas fa-dumbbell me-1"></i>חלבון
+                        <i class="fas fa-dumbbell me-1"></i> חלבון
                     </span>
                     <span class="nutrition-value">${totals.protein} גרם</span>
                 </div>
@@ -1406,10 +1352,9 @@
         // Update meals list
         const dailySummary = pageElement.querySelector('.daily-summary');
         if (dailySummary) {
-            dailySummary.innerHTML="";
-            // Remove existing meal items
-            //const existingMeals = dailySummary.querySelectorAll('.meal-item');
-            //existingMeals.forEach(item => item.remove());
+             // Remove existing meal items
+            const existingMeals = dailySummary.querySelectorAll('.meal-item');
+            existingMeals.forEach(item => item.remove());
             
             if (meals.length === 0) {
                 // Show empty state
@@ -1455,14 +1400,15 @@
                 });
                 
                 // Add summary footer
-                const summaryFooter = document.createElement('div');
-                summaryFooter.className = 'mt-4 p-3 bg-light rounded text-center';
+                /*/const summaryFooter = pageElement.querySelector('.footer-summary');
+                //summaryFooter.innerHTML="";
+                //summaryFooter.className = 'mt-4 p-3 bg-light rounded text-center';
                 summaryFooter.innerHTML = `
                     <small class="text-muted">
                         <strong>${meals.length}</strong> ארוחות נרשמו ${dayType === 'today' ? 'היום' : 'אתמול'}
                     </small>
                 `;
-                dailySummary.appendChild(summaryFooter);
+                dailySummary.appendChild(summaryFooter); */
             }
         }
         
@@ -1512,6 +1458,61 @@ function getMealTypeInHebrew(time) {
     if (hour >= 15 && hour < 18) return 'חטיף אחר הצהריים';
     if (hour >= 18 && hour < 22) return 'ארוחת ערב';
     return 'חטיף';
+}
+
+
+async function resetDatabase() {
+    // Show confirmation dialog
+    const confirmed = confirm(
+        '⚠️ האם אתה בטוח שברצונך למחוק את כל הנתונים?\n\n' +
+        'פעולה זו תמחק:\n' +
+        '• את כל הארוחות בספרייה\n' +
+        '• את כל הרישומים של ארוחות שנאכלו\n' +
+        '• את כל הנתונים התזונתיים\n\n' +
+        'לא ניתן לבטל פעולה זו!'
+    );
+    
+    if (!confirmed) return;
+    
+    // Double confirmation for safety
+    const doubleConfirmed = confirm(
+        '🚨 אישור אחרון!\n\n' +
+        'לחץ OK כדי למחוק לצמיתות את כל הנתונים.\n' +
+        'לחץ Cancel כדי לבטל.'
+    );
+    
+    if (!doubleConfirmed) return;
+    
+    try {
+        // Show loading state
+        const resetBtn = document.getElementById('resetDatabaseBtn');
+        if (resetBtn) {
+            resetBtn.disabled = true;
+            resetBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>מוחק...';
+        }
+        
+        // Clear all database data
+        await db.clearAllData();
+        
+        // Reload the meals page to show empty state
+        await loadMealsFromDB();
+        
+        // Show success message
+        alert('✅ כל הנתונים נמחקו בהצלחה!');
+        
+        console.log('🔄 Database reset completed');
+        
+    } catch (error) {
+        console.error('❌ Error resetting database:', error);
+        alert('❌ שגיאה במחיקת הנתונים. נסה שוב.');
+    } finally {
+        // Restore button state
+        const resetBtn = document.getElementById('resetDatabaseBtn');
+        if (resetBtn) {
+            resetBtn.disabled = false;
+            resetBtn.innerHTML = '<i class="fas fa-trash me-2"></i>מחק את כל הנתונים';
+        }
+    }
 }
 
         // Initialize app when page loads
