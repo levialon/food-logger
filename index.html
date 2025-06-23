@@ -820,7 +820,14 @@
                     meal.name.includes(term) || meal.ingredients.includes(term)
                 );
             }
-
+            async getMeal(id) {
+               const store = this.db.transaction(['meals'], 'readonly').objectStore('meals');
+                return new Promise((resolve, reject) => {
+              const request = store.get(id);
+              request.onsuccess = () => resolve(request.result);
+              request.onerror = () => reject(request.error);
+          });
+          }
             async eatMeal(mealId) {
                 const meal = await this.getMeal(mealId);
                 if (!meal) throw new Error('Meal not found');
@@ -1140,9 +1147,14 @@
             } else {
                 addBtn.style.display = 'none';
             }
-            
+           
+            if (pageIndex === 1) {
+             loadDayData('today');
+            } else if (pageIndex === 2) {
+            loadDayData('yesterday');
+          }
             // Load daily summary data for summary pages
-            loadDailySummary(pageIndex);
+            //loadDailySummary(pageIndex);
         }
         
         function toggleCard(card) {
@@ -1300,6 +1312,207 @@
                 button.classList.add('has-image');
             }
         }
+
+    async function loadDayData(dayType) {
+    if (!db) return;
+    
+    try {
+        // Calculate target date
+        const today = new Date();
+        let targetDate, pageTitle, pageIndex;
+        
+        if (dayType === 'today') {
+            targetDate = today.toISOString().split('T')[0];
+            pageTitle = 'היום';
+            pageIndex = 1;
+        } else if (dayType === 'yesterday') {
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            targetDate = yesterday.toISOString().split('T')[0];
+            pageTitle = 'אתמול';
+            pageIndex = 2;
+        } else {
+            console.error('Invalid dayType. Use "today" or "yesterday"');
+            return;
+        }
+        
+        // Get data from database
+        const [totals, meals] = await Promise.all([
+            db.getDayTotals(targetDate),
+            db.getDayMeals(targetDate)
+        ]);
+        
+        // Find the target page element
+        const pageElement = document.querySelector(`.page:nth-child(${pageIndex + 1})`);
+        if (!pageElement) {
+            console.error(`Page element not found for ${dayType}`);
+            return;
+        }
+        
+        // Update page header
+        const pageHeader = pageElement.querySelector('.header h1');
+        if (pageHeader) {
+            pageHeader.innerHTML = `
+                <i class="fas fa-calendar-${dayType === 'today' ? 'day' : 'minus'} me-2"></i>
+                ${pageTitle}
+            `;
+        }
+        
+        // Update date header
+        const dateHeader = pageElement.querySelector('.date-header');
+        if (dateHeader) {
+            const formattedDate = formatHebrewDate(targetDate);
+            dateHeader.innerHTML = `
+                <i class="fas fa-calendar me-2"></i>
+                ${formattedDate}
+            `;
+        }
+        
+        // Update nutrition summary
+        const nutritionSummary = pageElement.querySelector('.nutrition-summary');
+        if (nutritionSummary) {
+            const isOverGoal = totals.calories > db.DAILY_GOAL;
+            
+            // Update CSS classes for color coding
+            if (isOverGoal) {
+                nutritionSummary.classList.add('over-goal');
+            } else {
+                nutritionSummary.classList.remove('over-goal');
+            }
+            
+            // Update nutrition content
+            nutritionSummary.innerHTML = `
+                <div class="nutrition-row">
+                    <span class="nutrition-label">
+                        <i class="fas fa-fire me-1"></i>קלוריות
+                    </span>
+                    <span class="nutrition-value ${isOverGoal ? 'over-goal' : ''}">${totals.calories} / ${db.DAILY_GOAL}</span>
+                </div>
+                <div class="nutrition-row">
+                    <span class="nutrition-label">
+                        <i class="fas fa-seedling me-1"></i>פחמימות
+                    </span>
+                    <span class="nutrition-value">${totals.carbs} גרם</span>
+                </div>
+                <div class="nutrition-row">
+                    <span class="nutrition-label">
+                        <i class="fas fa-dumbbell me-1"></i>חלבון
+                    </span>
+                    <span class="nutrition-value">${totals.protein} גרם</span>
+                </div>
+            `;
+        }
+        
+        // Update meals list
+        const dailySummary = pageElement.querySelector('.daily-summary');
+        if (dailySummary) {
+            dailySummary.innerHTML="";
+            // Remove existing meal items
+            //const existingMeals = dailySummary.querySelectorAll('.meal-item');
+            //existingMeals.forEach(item => item.remove());
+            
+            if (meals.length === 0) {
+                // Show empty state
+                const emptyState = document.createElement('div');
+                emptyState.className = 'text-center py-4 text-muted';
+                emptyState.innerHTML = `
+                    <div class="mb-3">
+                        <i class="fas fa-utensils fa-3x text-muted"></i>
+                    </div>
+                    <h5 class="text-muted">לא נרשמו ארוחות ${dayType === 'today' ? 'היום' : 'אתמול'}</h5>
+                    <p class="text-muted mb-0">
+                        ${dayType === 'today' ? 'התחל לרשום ארוחות כדי לעקוב אחר התזונה שלך' : 'לא היו רישומים ביום זה'}
+                    </p>
+                `;
+                dailySummary.appendChild(emptyState);
+            } else {
+                // Add meal items
+                meals.forEach((meal, index) => {
+                    const mealItem = document.createElement('div');
+                    mealItem.className = 'meal-item';
+                    mealItem.style.animationDelay = `${index * 0.1}s`; // Stagger animation
+                    
+                    mealItem.innerHTML = `
+                        <div class="meal-item-header">
+                            <span class="meal-name">${meal.mealName}</span>
+                            <span class="meal-calories">
+                                <i class="fas fa-fire me-1"></i>${meal.calories} קל'
+                            </span>
+                        </div>
+                        <div class="meal-time">
+                            <i class="fas fa-clock me-1"></i>
+                            ${meal.time} - ${getMealTypeInHebrew(meal.time)}
+                        </div>
+                        <div class="meal-nutrition mt-2">
+                            <small class="text-muted">
+                                <i class="fas fa-seedling me-1"></i>${meal.carbs}גרם פחמ' • 
+                                <i class="fas fa-dumbbell me-1"></i>${meal.protein}גרם חלבון
+                            </small>
+                        </div>
+                    `;
+                    
+                    dailySummary.appendChild(mealItem);
+                });
+                
+                // Add summary footer
+                const summaryFooter = document.createElement('div');
+                summaryFooter.className = 'mt-4 p-3 bg-light rounded text-center';
+                summaryFooter.innerHTML = `
+                    <small class="text-muted">
+                        <strong>${meals.length}</strong> ארוחות נרשמו ${dayType === 'today' ? 'היום' : 'אתמול'}
+                    </small>
+                `;
+                dailySummary.appendChild(summaryFooter);
+            }
+        }
+        
+        console.log(`✅ Loaded ${dayType} data: ${totals.calories} calories, ${meals.length} meals`);
+        
+    } catch (error) {
+        console.error(`❌ Error loading ${dayType} data:`, error);
+        
+        // Show error state
+        const pageElement = document.querySelector(`.page:nth-child(${dayType === 'today' ? 2 : 3})`);
+        const dailySummary = pageElement?.querySelector('.daily-summary');
+        if (dailySummary) {
+            dailySummary.innerHTML = `
+                <div class="text-center py-4 text-danger">
+                    <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                    <div>שגיאה בטעינת נתונים</div>
+                    <small>נסה לרענן את הדף</small>
+                </div>
+            `;
+        }
+    }
+}
+
+// Helper function for Hebrew date formatting
+function formatHebrewDate(dateString) {
+    const date = new Date(dateString);
+    const days = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+    const months = [
+        'ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני',
+        'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'
+    ];
+    
+    const dayName = days[date.getDay()];
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    
+    return `יום ${dayName}, ${day} ${month} ${year}`;
+}
+
+// Helper function (already exists in your code)
+function getMealTypeInHebrew(time) {
+    const hour = parseInt(time.split(':')[0]);
+    
+    if (hour >= 5 && hour < 11) return 'ארוחת בוקר';
+    if (hour >= 11 && hour < 15) return 'ארוחת צהריים';
+    if (hour >= 15 && hour < 18) return 'חטיף אחר הצהריים';
+    if (hour >= 18 && hour < 22) return 'ארוחת ערב';
+    return 'חטיף';
+}
 
         // Initialize app when page loads
         document.addEventListener('DOMContentLoaded', initializeApp);
