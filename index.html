@@ -21,11 +21,10 @@
         
 .app-container {
     display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
-    direction: ltl;
+    overflow-x: hidden;
+    scroll-snap-type: none;
+    -webkit-overflow-scrolling: auto;
+    direction: rtl;
     width: 100vw; /* let it overflow naturally */
     height: 100%;
 }
@@ -33,10 +32,10 @@
         
 .page {
     flex: 0 0 100vw;
-    scroll-snap-align: start;
+    
     overflow-x: hidden;
     min-height: calc(100vh - 120px);
-    touch-action: pan-y;
+    touch-action: pan-y !important;
     diretion:rtl;
 }
 
@@ -49,7 +48,7 @@
             cursor: pointer;
             overflow: hidden;
             border-radius: 12px;
-            height: 100%;
+        /*    height: 100%; */
         }
         
         .meal-card:hover {
@@ -149,6 +148,7 @@
             color: white;
             padding: 1rem 0;
             margin-bottom: 1rem;
+
         }
         
         .expand-icon {
@@ -445,12 +445,20 @@
         <div class="page">
             <!-- Header -->
             <div class="header">
-                <div class="container-fluid">
+                <div class="container-fluid d-flex align-items-center justify-content-between ">
                     <h1 class="h3 mb-0 text-center">
                         <i class="fas fa-utensils me-2"></i>
                         יומן תזונה
                     </h1>
+                    <button type="button" 
+                                  class="btn btn-outline-danger btn-sm" 
+                                  id="resetDatabaseBtn"
+                                  onclick="resetDatabase()">
+                              <i class="fas fa-trash"></i>
+                          </button>
+       
                 </div>
+                                    
             </div>
 
             <!-- Main Content -->
@@ -482,30 +490,7 @@
                     <small>נסה לחפש במילים אחרות</small>
                 </div>
             </div>
-            <!-- Reset Database Section - Add at the bottom of meals page -->
-          <div class="container-fluid px-3 mt-4">
-              <div class="danger-zone">
-                  <div class="card border-danger">
-                      <div class="card-header bg-danger text-white">
-                          <h6 class="mb-0">
-                              <i class="fas fa-exclamation-triangle me-2"></i>
-                              אזור מסוכן
-                          </h6>
-                      </div>
-                      <div class="card-body">
-                          <p class="text-muted mb-3">
-                              פעולה זו תמחק לצמיתות את כל הארוחות והנתונים התזונתיים שלך.
-                          </p>
-                          <button type="button" 
-                                  class="btn btn-outline-danger btn-sm" 
-                                  id="resetDatabaseBtn"
-                                  onclick="resetDatabase()">
-                              <i class="fas fa-trash me-2"></i>מחק את כל הנתונים
-                          </button>
-                      </div>
-                  </div>
-              </div>
-          </div>
+      
         </div>
 
         <!-- Page 2: Today's Summary -->
@@ -516,6 +501,7 @@
                         <i class="fas fa-calendar-day me-2"></i>
                         היום
                     </h1>
+             
                 </div>
             </div>
 
