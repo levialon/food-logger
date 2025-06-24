@@ -1024,7 +1024,7 @@
             alert('לא התקבלה תשובה מתאימה.');
           }
         } else {
-            alert(data.error);
+            alert(data.error+"/n"+data.detail);
           /*resultDiv.innerHTML = `
             <div class="text-danger">
               <strong>שגיאה:</strong> ${data.error}<br>
@@ -1070,7 +1070,7 @@
                 saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>שומר...';
                 saveBtn.disabled = true;
                 
-                let imageData = `https://picsum.photos/400/400?random=${Date.now()}`; // Default placeholder
+                //let imageData = `https://picsum.photos/400/400?random=${Date.now()}`; // Default placeholder DISABLED PLACEHOLER IMAGE
                 
                 // If user selected an image, compress and convert to base64
                 if (imageInput.files && imageInput.files[0]) {
