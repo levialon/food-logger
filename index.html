@@ -1045,6 +1045,7 @@
             const ingredients = document.getElementById('ingredients').value.trim();
             const calories = parseInt(document.getElementById('calories').value) || 0;
             const carbs = parseInt(document.getElementById('carbs').value) || 0;
+            const protein = parseInt(document.getElementById('protein').value) || 0;
             const imageInput = document.getElementById('mealImageInput');
             
             if (!name) {
@@ -1083,12 +1084,9 @@
                     imageData = await compressAndConvertImage(file, 400, 0.7);
                     console.log(`Image compressed from ${Math.round(file.size/1024)}KB to ${Math.round(imageData.length*0.75/1024)}KB`);
                 }
-
-                // Estimate protein based on calories (rough estimate: 20% of calories)
-                const estimatedProtein = Math.round(calories * 0.2);
-                
+                            
                 // Add to database
-                const meal = await db.addMeal(name, imageData, ingredients, calories, carbs, estimatedProtein);
+                const meal = await db.addMeal(name, imageData, ingredients, calories, carbs, protein);
                 
                 // Reload meals in UI
                 await loadMealsFromDB();
