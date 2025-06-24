@@ -1014,11 +1014,11 @@
           const match = data.answer?.trim().match(/(\d+)[, ]+(\d+)[, ]+(\d+)/);
           if (match) {
             const [_, cal, carbs, protein] = match;
-            document.getElementById('calories').innerHTML = cal;
-            document.getElementById('carbs').innerHTML = carbs;
-            document.getElementById('protein').innerHTML = protein;
+            document.getElementById('calories').value = cal;
+            document.getElementById('carbs').value = carbs;
+            document.getElementById('protein').value = protein;
             
-            //alert("cal:"+cal+" | carbs: "+carbs +" protein:" + protein);
+        alert("cal:"+cal+" | carbs: "+carbs +" protein:" + protein);
               
           } else {
             alert('לא התקבלה תשובה מתאימה.');
