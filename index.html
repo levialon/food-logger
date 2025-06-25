@@ -69,6 +69,7 @@
                   position: absolute;
                   width: 90%;
                   right: 5%;
+                  top: 15%;
                   z-index: 100;
                   box-shadow: 0 8px 30px rgba(0,0,0,0.3);
                   border-radius: 12px;
@@ -1952,9 +1953,18 @@ This IS PAGE
 
       function createWeekSummary(weekData) {
          
-          const greenDays = weekData.filter(day => day.totalCalories <= db.DAILY_GOAL).length;
-          const redDays = weekData.filter(day => day.totalCalories > db.DAILY_GOAL).length;
-          const avgCalories = Math.round(weekData.reduce((sum, day) => sum + day.totalCalories, 0) / weekData.length);
+          // Filter to only days with meals logged
+          const daysWithMeals = weekData.filter(day => day.meals.length > 0);
+         
+          // Calculate metrics only for days with meals
+          const greenDays = daysWithMeals.filter(day => day.totalCalories > 100 && day.totalCalories <= DAILY_GOAL ).length;
+          const redDays = daysWithMeals.filter(day => day.totalCalories > DAILY_GOAL).length;
+          
+          // Average calories only for days with meals (avoid division by zero)
+          const avgCalories = daysWithMeals.length > 0 ? 
+              Math.round(daysWithMeals.reduce((sum, day) => sum + day.totalCalories, 0) / daysWithMeals.length) : 0;
+          
+          // Total meals across all days
           const totalMeals = weekData.reduce((sum, day) => sum + day.meals.length, 0);
 
           return `
