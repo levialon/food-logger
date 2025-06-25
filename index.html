@@ -1038,27 +1038,41 @@ This IS PAGE
                 };
             });
         }
-    async  deleteAllLogsForMeal(mealId) {
-        return new Promise((resolve, reject) => {
+   async deleteAllLogsForMeal(mealId) {
+    return new Promise((resolve, reject) => {
         const transaction = this.db.transaction(['dailyLogs'], 'readwrite');
         const store = transaction.objectStore('dailyLogs');
-        const index = store.index('mealId');
         
-        const request = index.openCursor(mealId);
+        // Get all logs and filter by mealId
+        const request = store.getAll();
         
-        request.onsuccess = (event) => {
-            const cursor = event.target.result;
-            if (cursor) {
-                cursor.delete(); // Delete this log entry
-                cursor.continue(); // Move to next entry
-            } else {
-                console.log(`✅ Deleted all logs for meal: ${mealId}`);
+        request.onsuccess = () => {
+            const allLogs = request.result;
+            const logsToDelete = allLogs.filter(log => log.mealId === mealId);
+            
+            if (logsToDelete.length === 0) {
+                console.log(`✅ No logs found for meal: ${mealId}`);
                 resolve();
+                return;
             }
+            
+            // Delete each matching log
+            let deletedCount = 0;
+            logsToDelete.forEach(log => {
+                const deleteRequest = store.delete(log.id);
+                deleteRequest.onsuccess = () => {
+                    deletedCount++;
+                    if (deletedCount === logsToDelete.length) {
+                        console.log(`✅ Deleted ${deletedCount} logs for meal: ${mealId}`);
+                        resolve();
+                    }
+                };
+                deleteRequest.onerror = () => reject(deleteRequest.error);
+            });
         };
         
         request.onerror = () => {
-            console.error(`❌ Error deleting logs for meal: ${mealId}`, request.error);
+            console.error(`❌ Error getting logs for meal: ${mealId}`, request.error);
             reject(request.error);
         };
     });
