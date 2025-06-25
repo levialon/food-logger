@@ -1021,6 +1021,23 @@ This IS PAGE
                           };
                       });
                   }
+          async deleteMeal(mealId) {
+              return new Promise((resolve, reject) => {
+              const transaction = this.db.transaction(['meals'], 'readwrite');
+              const store = transaction.objectStore('meals');
+                const request = store.delete(mealId);
+        
+        request.onsuccess = () => {
+            console.log(`✅ Meal deleted: ${mealId}`);
+            resolve();
+        };
+        
+        request.onerror = () => {
+            console.error(`❌ Error deleting meal: ${mealId}`, request.error);
+            reject(request.error);
+        };
+    });
+}
 
               }
 
@@ -1117,6 +1134,9 @@ This IS PAGE
                                       </div>
                                       <button class="btn eat-now-btn" onclick="eatNow(event, '${meal.id}', '${meal.name}', ${meal.calories})">
                                           <i class="fas fa-plus me-2"></i>אכלתי עכשיו
+                                      </button>
+                                      <button class="btn btn-outline-danger btn-sm" onclick="deleteMeal('${meal.id}', '${meal.name}')">
+                                          <i class="fas fa-trash me-2"></i>מחק ארוחה
                                       </button>
                                   </div>
                               </div>
@@ -1216,7 +1236,87 @@ This IS PAGE
             }
           }
 
-
+async function deleteMeal(mealId, mealName) {
+    // Show confirmation dialog
+    const confirmed = confirm(
+        `⚠️ האם אתה בטוח שברצונך למחוק את הארוחה?\n\n` +
+        `"${mealName}"\n\n` +
+        `פעולה זו תמחק:\n` +
+        `• את הארוחה מהספרייה\n` +
+        `• את כל הרישומים של הארוחה הזו\n\n` +
+        `לא ניתן לבטל פעולה זו!`
+    );
+    
+    if (!confirmed) return;
+    
+    try {
+        // Show loading state on delete button
+        const deleteBtn = document.querySelector(`[onclick="deleteMeal('${mealId}', '${mealName}')"]`);
+        if (deleteBtn) {
+            deleteBtn.disabled = true;
+            deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>מוחק...';
+        }
+        
+        // Delete from database
+        await db.deleteMeal(mealId);
+        
+        // Also delete all daily logs for this meal
+        await deleteAllLogsForMeal(mealId);
+        
+        // Reload meals to update UI
+        await loadMealsFromDB();
+        
+        // Show success message
+        console.log(`✅ Deleted meal: ${mealName}`);
+        
+        // Close any expanded cards since the meal is gone
+        document.querySelectorAll('.meal-card.expanded').forEach(card => {
+            const details = card.querySelector('.card-details');
+            const icon = card.querySelector('.expand-icon i');
+            
+            details.classList.remove('show');
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+            card.classList.remove('expanded');
+        });
+        
+    } catch (error) {
+        console.error('❌ Error deleting meal:', error);
+        alert('❌ שגיאה במחיקת הארוחה. נסה שוב.');
+        
+        // Restore button state on error
+        const deleteBtn = document.querySelector(`[onclick="deleteMeal('${mealId}', '${mealName}')"]`);
+        if (deleteBtn) {
+            deleteBtn.disabled = false;
+            deleteBtn.innerHTML = '<i class="fas fa-trash me-2"></i>מחק ארוחה';
+        }
+    }
+}
+      async function deleteAllLogsForMeal(mealId) {
+    return new Promise((resolve, reject) => {
+        const transaction = this.db.transaction(['dailyLogs'], 'readwrite');
+        const store = transaction.objectStore('dailyLogs');
+        const index = store.index('mealId');
+        
+        const request = index.openCursor(mealId);
+        
+        request.onsuccess = (event) => {
+            const cursor = event.target.result;
+            if (cursor) {
+                cursor.delete(); // Delete this log entry
+                cursor.continue(); // Move to next entry
+            } else {
+                console.log(`✅ Deleted all logs for meal: ${mealId}`);
+                resolve();
+            }
+        };
+        
+        request.onerror = () => {
+            console.error(`❌ Error deleting logs for meal: ${mealId}`, request.error);
+            reject(request.error);
+        };
+    });
+}
               // Add new meal to database
               async function addNewMeal() {
                   const name = document.getElementById('mealName').value.trim();
