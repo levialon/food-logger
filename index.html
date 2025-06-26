@@ -1147,7 +1147,7 @@ async function deleteMeal(mealId, mealName) {
                    // Remove existing meal items
                   //const existingMeals = dailySummary.querySelectorAll('.meal-item');
                   //existingMeals.forEach(item => item.remove());
-                  dailySummary.innerHTML="";
+                  //dailySummary.innerHTML="";
 
                   if (meals.length === 0) {
                       // Show empty state
@@ -1584,7 +1584,7 @@ async function deleteMeal(mealId, mealName) {
         
         // Reload the current day data to refresh the UI
        
-            await loadDayData("today");
+            await loadDayData();
         
         
         // Show success message in console
