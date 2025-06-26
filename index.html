@@ -922,9 +922,9 @@ async function deleteMeal(mealId, mealName) {
                       icon.classList.remove('fa-chevron-up');
                       icon.classList.add('fa-chevron-down');
                       card.classList.remove('expanded');
+                      document.getElementById('bgFocus').classList.add('d-none');
                   } else {
                       // Close all other cards first
-                      document.getElementById('bgFocus').classList.add('d-none');
                       document.querySelectorAll('.card-details.show').forEach(detail => {
                           detail.classList.remove('show');
                       });
