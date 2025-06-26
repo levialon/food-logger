@@ -597,12 +597,13 @@ This IS PAGE
                                   <div class="card-overlay">
                                       <h5 class="meal-title">${meal.name}</h5>
                                       <div class="card-stats">
-                                          <span class="calories-info">
-                                              ${meal.calories} קלוריות'
+                                          <span class="usage-counte">
+                                              ${meal.calories} קלוריות
                                           </span>
                                           <span class="usage-counter">
                                               ${meal.usageCount} פעמים
                                           </span>
+                                          <button class="btn btn-outline-danger btn-sm" onclick="deleteMeal('${meal.id}', '${meal.name}')">X</button>
                                       </div>
                                   </div>
                               </div>
@@ -625,9 +626,6 @@ This IS PAGE
                                       </div>
                                       <button class="btn eat-now-btn" onclick="eatNow(event, '${meal.id}', '${meal.name}', ${meal.calories})">
                                           אכלתי עכשיו
-                                      </button>
-                                      <button class="btn btn-outline-danger btn-sm" onclick="deleteMeal('${meal.id}', '${meal.name}')">
-                                          מחק ארוחה
                                       </button>
                                   </div>
                               </div>
