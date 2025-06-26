@@ -1107,6 +1107,7 @@ async function deleteMeal(mealId, mealName) {
               }*/
 
               // Update nutrition summary
+             pageElement.querySelector('.daily-summary').innerHTML=""; //RESET DAILY DATA;
               const nutritionSummary = pageElement.querySelector('.nutrition-summary');
               if (nutritionSummary) {
                   const isOverGoal = totals.calories > db.DAILY_GOAL;
