@@ -6,7 +6,7 @@
         --accent-color: #FFE66D;
         --success-color: #6BCF7F;
         --warning-color: #FF8A65;
-        --danger-color: #F06292;
+        --danger-color: #eeeeee;
         --surface-color: #FFFFFF;
         --background-color: #FAFAFA;
         --on-surface: #2E2E2E;
@@ -52,7 +52,7 @@
       .header {
         background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
         color: white;
-        padding: 2rem 0;
+        padding: 0.5rem 0;
         margin-bottom: 1.5rem;
         box-shadow: var(--elevation-2);
       }
@@ -251,7 +251,7 @@
         color: var(--danger-color);
         background: transparent;
         font-weight: 600;
-        padding: 0.75rem 1.5rem;
+        //padding: 0.75rem 1.5rem;
         border-radius: var(--border-radius-sm);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
