@@ -18,7 +18,9 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="foodlogger.css">
-
+    <!--<style>
+       
+    </style> -->
   </head>
   <body>
     <!-- App Container with 3 pages -->
@@ -31,7 +33,6 @@
             class="container-fluid d-flex align-items-center justify-content-between"
           >
             <h1 class="h3 mb-0 text-center">
-              <i class="fas fa-utensils me-2"></i>
               יומן תזונה
             </h1>
             <button
@@ -40,7 +41,7 @@
               id="resetDatabaseBtn"
               onclick="resetDatabase()"
             >
-              <i class="fas fa-trash"></i>
+              איפוס
             </button>
           </div>
         </div>
@@ -51,7 +52,7 @@
           <div class="search-container mb-3">
             <div class="input-group">
               <span class="input-group-text bg-white border-end-0">
-                <i class="fas fa-search text-muted"></i>
+                <i class="fas fa-search text-muted minimal-icon"></i>
               </span>
               <input
                 type="text"
@@ -67,7 +68,7 @@
                 onclick="clearSearch()"
                 style="display: none;"
               >
-                <i class="fas fa-times"></i>
+                X
               </button>
             </div>
           </div>
@@ -91,8 +92,7 @@
         <div class="header">
           <div class="container-fluid">
             <h1 class="h3 mb-0 text-center">
-              <i class="fas fa-calendar-day me-2"></i>
-              היום
+                היום
             </h1>
           </div>
         </div>
@@ -148,8 +148,8 @@ This IS PAGE
           <span>היום</span>
         </li>
         <li class="tab" onclick="switchTab(2)">
-          <i class="fas fa-calendar-minus"></i>
-          <span>סיכום שבועי</span>
+          <i class="fas fa-calendar-week"></i>
+          <span>שבועי</span>
         </li>
       </ul>
     </div>
@@ -268,14 +268,14 @@ This IS PAGE
               class="btn btn-primary"
               onclick="addNewMeal()"
             >
-              <i class="fas fa-save me-1"></i>שמור ארוחה
+              שמור ארוחה
             </button>
-            <button
+           <button
               type="button"
-              class="btn btn-primary"
+              class="btn btn-success"
               onclick="calcNewMeal()"
-            >
-              <i class="fas fa-microchip me-1"></i>ChatGPT
+              style="background: var(--secondary-color); border: none; ">
+              חישוב אוטומטי
             </button>
           </div>
         </div>
@@ -595,10 +595,10 @@ This IS PAGE
                                       <h5 class="meal-title">${meal.name}</h5>
                                       <div class="card-stats">
                                           <span class="calories-info">
-                                              <i class="fas fa-fire me-1"></i>${meal.calories} קל'
+                                              ${meal.calories} קלוריות'
                                           </span>
                                           <span class="usage-counter">
-                                              <i class="fas fa-utensils me-1"></i>${meal.usageCount} פעמים
+                                              ${meal.usageCount} פעמים
                                           </span>
                                       </div>
                                   </div>
@@ -609,27 +609,25 @@ This IS PAGE
                                       <p class="ingredients-text">
                                           ${meal.ingredients}
                                       </p>
-                                      <div class="d-flex justify-content-between align-items-center mb-3">
-                                          <div class="d-flex">
-                                              <span class="badge bg-primary stats-badge">
-                                                  <i class="fas fa-fire me-1"></i>${meal.calories} קלוריות
-                                              </span>
-                                              <span class="badge bg-success stats-badge">
-                                                  <i class="fas fa-seedling me-1"></i>${meal.carbs} גרם פחמימות
-                                              </span>
-                                              <span class="badge bg-info stats-badge">
-                                                  <i class="fas fa-dumbbell me-1"></i>${meal.protein} גרם חלבון
-                                              </span>
-                                          </div>
+                                       <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+                                          <span class="badge bg-primary stats-badge">
+                                              ${meal.calories} קלוריות
+                                          </span>
+                                          <span class="badge bg-success stats-badge">
+                                              ${meal.carbs} גרם פחמימות
+                                          </span>
+                                          <span class="badge bg-info stats-badge">
+                                              ${meal.protein} גרם חלבון
+                                          </span>
                                           <span class="badge bg-secondary stats-badge">
-                                              <i class="fas fa-utensils me-1"></i>נוצל ${meal.usageCount} פעמים
+                                              נוצל ${meal.usageCount} פעמים
                                           </span>
                                       </div>
                                       <button class="btn eat-now-btn" onclick="eatNow(event, '${meal.id}', '${meal.name}', ${meal.calories})">
-                                          <i class="fas fa-plus me-2"></i>אכלתי עכשיו
+                                          אכלתי עכשיו
                                       </button>
                                       <button class="btn btn-outline-danger btn-sm" onclick="deleteMeal('${meal.id}', '${meal.name}')">
-                                          <i class="fas fa-trash me-2"></i>מחק ארוחה
+                                          מחק ארוחה
                                       </button>
                                   </div>
                               </div>
@@ -856,7 +854,7 @@ async function deleteMeal(mealId, mealName) {
 
                       // Restore button state
                       const saveBtn = document.querySelector('#addMealModal .btn-primary');
-                      saveBtn.innerHTML = '<i class="fas fa-save me-1"></i>שמור ארוחה';
+                      saveBtn.innerHTML = 'שמור ארוחה';
                       saveBtn.disabled = false;
                   }
               }
@@ -905,9 +903,8 @@ async function deleteMeal(mealId, mealName) {
                   }
 
                   if (pageIndex === 1) {
-                   loadDayData('today');
+                   loadDayData();
                   } else if (pageIndex === 2) {
-                    console.log("week!");
                     loadWeeklyOverview();
                   //loadDayData('yesterday');
                 }
@@ -1062,7 +1059,7 @@ async function deleteMeal(mealId, mealName) {
                       const fileName = input.files[0].name;
                       button.innerHTML = `
                           <div class="text-center">
-                              <i class="fas fa-check-circle fa-2x mb-2"></i>
+                              <i class="fas fa-check-circle fa-2x mb-2" style="color: var(--success-color);"></i>
                               <div>תמונה נבחרה</div>
                               <small>${fileName}</small>
                           </div>
@@ -1071,29 +1068,16 @@ async function deleteMeal(mealId, mealName) {
                   }
               }
 
-          async function loadDayData(dayType) {
+          async function loadDayData() {
           if (!db) return;
 
           try {
               // Calculate target date
               const today = new Date();
-              let targetDate, pageTitle, pageIndex;
-
-              if (dayType === 'today') {
-                  targetDate = today.toISOString().split('T')[0];
-                  pageTitle = 'היום';
-                  pageIndex = 1;
-              } else if (dayType === 'yesterday') {
-                  const yesterday = new Date(today);
-                  yesterday.setDate(yesterday.getDate() - 1);
-                  targetDate = yesterday.toISOString().split('T')[0];
-                  pageTitle = 'אתמול';
-                  pageIndex = 2;
-              } else {
-                  console.error('Invalid dayType. Use "today" or "yesterday"');
-                  return;
-              }
-
+              let targetDate, pageIndex;
+              targetDate = today.toISOString().split('T')[0];
+              pageIndex = 1;
+ 
               // Get data from database
               const [totals, meals] = await Promise.all([
                   db.getDayTotals(targetDate),
@@ -1103,7 +1087,7 @@ async function deleteMeal(mealId, mealName) {
               // Find the target page element
               const pageElement = document.querySelector(`.page:nth-child(${pageIndex + 1})`);
               if (!pageElement) {
-                  console.error(`Page element not found for ${dayType}`);
+                  console.error(`Page element not found for Today`);
                   return;
               }
 
@@ -1111,20 +1095,19 @@ async function deleteMeal(mealId, mealName) {
               const pageHeader = pageElement.querySelector('.header h1');
               if (pageHeader) {
                   pageHeader.innerHTML = `
-                      <i class="fas fa-calendar-${dayType === 'today' ? 'day' : 'minus'} me-2"></i>
-                      ${pageTitle}
+                      היום
                   `;
               }
 
               // Update date header
-              const dateHeader = pageElement.querySelector('.date-header');
+              /*const dateHeader = pageElement.querySelector('.date-header');
               if (dateHeader) {
                   const formattedDate = formatHebrewDate(targetDate);
                   dateHeader.innerHTML = `
                       <i class="fas fa-calendar me-2"></i>
                       ${formattedDate}
                   `;
-              }
+              }*/
 
               // Update nutrition summary
               const nutritionSummary = pageElement.querySelector('.nutrition-summary');
@@ -1142,19 +1125,19 @@ async function deleteMeal(mealId, mealName) {
                   nutritionSummary.innerHTML = `
                       <div class="nutrition-row">
                           <span class="nutrition-label">
-                              <i class="fas fa-fire me-1"></i> קלוריות
+                              קלוריות
                           </span>
                           <span class="nutrition-value ${isOverGoal ? 'over-goal' : ''}">${totals.calories} / ${db.DAILY_GOAL}</span>
                       </div>
                       <div class="nutrition-row">
                           <span class="nutrition-label">
-                              <i class="fas fa-seedling me-1"></i> פחמימות
+                              פחמימות
                           </span>
                           <span class="nutrition-value">${totals.carbs} גרם</span>
                       </div>
                       <div class="nutrition-row">
                           <span class="nutrition-label">
-                              <i class="fas fa-dumbbell me-1"></i> חלבון
+                              חלבון
                           </span>
                           <span class="nutrition-value">${totals.protein} גרם</span>
                       </div>
@@ -1177,10 +1160,8 @@ async function deleteMeal(mealId, mealName) {
                           <div class="mb-3">
                               <i class="fas fa-utensils fa-3x text-muted"></i>
                           </div>
-                          <h5 class="text-muted">לא נרשמו ארוחות ${dayType === 'today' ? 'היום' : 'אתמול'}</h5>
-                          <p class="text-muted mb-0">
-                              ${dayType === 'today' ? 'התחל לרשום ארוחות כדי לעקוב אחר התזונה שלך' : 'לא היו רישומים ביום זה'}
-                          </p>
+                          <h5 class="text-muted">לא נרשמו ארוחות היום</h5>
+                          
                       `;
                       dailySummary.appendChild(emptyState);
                   } else {
@@ -1232,14 +1213,14 @@ async function deleteMeal(mealId, mealName) {
                   }
               }
 
-              console.log(`✅ Loaded ${dayType} data: ${totals.calories} calories, ${meals.length} meals`);
+              console.log(`✅ Loaded today data: ${totals.calories} calories, ${meals.length} meals`);
 
           } catch (error) {
               console.error(`❌ Error loading ${dayType} data:`, error);
 
               // Show error state
-              const pageElement = document.querySelector(`.page:nth-child(${dayType === 'today' ? 2 : 3})`);
-              const dailySummary = pageElement?.querySelector('.daily-summary');
+              //const pageElement = document.querySelector(`.page:nth-child(${dayType === 'today' ? 2 : 3})`);
+              //const dailySummary = pageElement?.querySelector('.daily-summary');
               if (dailySummary) {
                   dailySummary.innerHTML = `
                       <div class="text-center py-4 text-danger">
@@ -1382,11 +1363,7 @@ async function deleteMeal(mealId, mealName) {
                    <div class="container-fluid px-3">
                       <!-- Week Summary -->
                       <div class="week-summary">
-                          <h5 class="mb-0">
-                              <i class="fas fa-chart-bar me-2"></i>
-                              סיכום השבוע
-                          </h5>
-                          <div class="summary-grid" id="weekSummary">
+                           <div class="summary-grid" id="weekSummary">
                               ${createWeekSummary(weekData)}
                           </div>
                       </div>
@@ -1471,11 +1448,11 @@ async function deleteMeal(mealId, mealName) {
                           <span class="meal-name">${meal.mealName}</span>
                           <span class="meal-time">
                               <i class="fas fa-clock me-1"></i>
-                              ${meal.time} - ${getMealTypeInHebrew(meal.time)}
+                              ${meal.time}  
                           </span>
                       </div>
                       <span class="meal-calories">
-                          <i class="fas fa-fire me-1"></i>${meal.calories} קל'
+                          ${meal.calories} קל'
                       </span>
                   </div>
               `).join('');
@@ -1491,26 +1468,19 @@ async function deleteMeal(mealId, mealName) {
                           <h5 class="day-title">${formatHebrewDate2(dayData.dateObj)}</h5>
                       </div>
 
-                      <div class="day-date">
-                          ${formatHebrewDate2(dayData.dateObj, false)}
-                      </div>
-
                       <div class="nutrition-summary d-flex justify-content-evenly">
                           <div class="nutrition-item">
-                              <i class="fas fa-fire"></i>
                               <span class="nutrition-value ${statusClass}">
-                                  ${dayData.totalCalories} / ${db.DAILY_GOAL} קל'
+                                  ${dayData.totalCalories} קל'
                               </span>
                           </div>
                           <div class="nutrition-item">
-                              <i class="fas fa-seedling"></i>
                               <span class="nutrition-value">
                                   ${dayData.totalCarbs} גרם פחמ'
                               </span>
                           </div>
                           <div class="nutrition-item">
-                              <i class="fas fa-utensils"></i>
-                              <span class="nutrition-value">
+                                <span class="nutrition-value">
                                   ${dayData.meals.length} ארוחות
                               </span>
                           </div>
