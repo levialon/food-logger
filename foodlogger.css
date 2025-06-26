@@ -143,10 +143,10 @@
       .card-stats {
         display: flex;
         justify-content: flex-start;
-        //align-items: flex-start;
         font-size: 1rem;
         font-weight: 500;
         display:none;
+        margin-bottom:0px;
       }
 
       .calories-info {
