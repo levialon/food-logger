@@ -125,10 +125,10 @@
 .meal-card.expanded .meal-title {
   /* Your styles here */
   font-size: 2rem;
-  margin-bottom:2rem;
+  margin-bottom:1.5rem;
 }
 
-.meal-card.expanded .usage-counter 
+.meal-card.expanded .usage-counter .calories-info
 
 {
       font-size:1.25rem;.
@@ -137,6 +137,7 @@
 
 .meal-card.expanded .card-stats {
    display:block;
+   margin-botom:2rem;.
 }
 
       .card-stats {
@@ -149,12 +150,13 @@
       }
 
       .calories-info {
-        background: var(--primary-color);
+        background: rgba(255,255,255,0.25);
         padding: 0.5rem 1rem;
         border-radius: 20px;
-        font-size: 1.1rem;
-        font-weight: 700;
-        letter-spacing: 0.02em;
+        font-size: 0.8rem;
+        font-weight: 500;
+        backdrop-filter: blur(10px);
+        margin-left:1rem;
       }
 
       .usage-counter {
@@ -164,6 +166,7 @@
         font-size: 0.8rem;
         font-weight: 500;
         backdrop-filter: blur(10px);
+            
        
       }
 
