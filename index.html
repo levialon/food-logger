@@ -924,7 +924,7 @@ async function deleteMeal(mealId, mealName) {
                       card.classList.remove('expanded');
                   } else {
                       // Close all other cards first
-                      document.getElementById('#bgFocus').add('.d-none');
+                      document.getElementById('bgFocus').classList.add('d-none');
                       document.querySelectorAll('.card-details.show').forEach(detail => {
                           detail.classList.remove('show');
                       });
@@ -937,7 +937,7 @@ async function deleteMeal(mealId, mealName) {
                       });
 
                       // Open this card
-                      document.getElementById('#bgFocus').remove('.d-none');
+                      document.getElementById('bgFocus').classList.remove('d-none');
                       details.classList.add('show');
                       icon.classList.remove('fa-chevron-down');
                       icon.classList.add('fa-chevron-up');
