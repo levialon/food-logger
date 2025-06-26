@@ -1107,7 +1107,8 @@ async function deleteMeal(mealId, mealName) {
               }*/
 
               // Update nutrition summary
-             pageElement.querySelector('.daily-summary').innerHTML=""; //RESET DAILY DATA;
+            // pageElement.querySelector('.daily-summary').innerHTML=""; //RESET DAILY DATA;
+            
               const nutritionSummary = pageElement.querySelector('.nutrition-summary');
               if (nutritionSummary) {
                   const isOverGoal = totals.calories > db.DAILY_GOAL;
@@ -1146,8 +1147,8 @@ async function deleteMeal(mealId, mealName) {
               const dailySummary = pageElement.querySelector('.daily-summary');
               if (dailySummary) {
                    // Remove existing meal items
-                  //const existingMeals = dailySummary.querySelectorAll('.meal-item');
-                  //existingMeals.forEach(item => item.remove());
+                  const existingMeals = dailySummary.querySelectorAll('.meal-item');
+                  existingMeals.forEach(item => item.remove());
                   //dailySummary.innerHTML="";
 
                   if (meals.length === 0) {
@@ -1161,7 +1162,7 @@ async function deleteMeal(mealId, mealName) {
                           <h5 class="text-muted">לא נרשמו ארוחות היום</h5>
                           
                       `;
-                      dailySummary.appendChild(emptyState);
+                      dailySummary.innerHTML=emptyState;
                   } else {
                       // Add meal items
                       meals.forEach((meal, index) => {
