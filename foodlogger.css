@@ -86,10 +86,18 @@
         width: 92%;
         right: 4%;
         top:5%;
-        z-index: 100;
+        z-index: 1002;
         box-shadow: var(--elevation-3);
         transform: none;
       }
+  .popup-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    z-index: 1001;
+    display:none;
+  }
 
       .card-closed {
         height: 200px;
