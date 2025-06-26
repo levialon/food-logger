@@ -82,9 +82,10 @@
       }
 
       .meal-card.expanded {
-        position: absolute;
+        position: fixed;
         width: 92%;
         right: 4%;
+        top:5%;
         z-index: 100;
         box-shadow: var(--elevation-3);
         transform: none;
@@ -102,8 +103,7 @@
       }
 
       .meal-card.expanded .card-closed {
-        height: 400px;
-        filter: none !important; 
+        height: 50vh;
       }
 
       .card-overlay {
