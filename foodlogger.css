@@ -85,7 +85,8 @@
         position: absolute;
         width: 92%;
         right: 4%;
-        top: 10%;
+        top: 8vh;
+        height: 80%;
         z-index: 100;
         box-shadow: var(--elevation-3);
         transform: none;
@@ -125,7 +126,7 @@
       .card-stats {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: right;
         font-size: 1rem;
         font-weight: 500;
       }
