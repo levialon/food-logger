@@ -1077,6 +1077,23 @@ This IS PAGE
         };
     });
 }
+    async deleteLogEntry(logId) {
+        return new Promise((resolve, reject) => {
+        const transaction = this.db.transaction(['dailyLogs'], 'readwrite');
+        const store = transaction.objectStore('dailyLogs');
+        const request = store.delete(logId);
+        
+        request.onsuccess = () => {
+            console.log(`✅ Deleted log entry: ${logId}`);
+            resolve();
+        };
+        
+        request.onerror = () => {
+            console.error(`❌ Error deleting log entry: ${logId}`, request.error);
+            reject(request.error);
+        };
+    });
+}
 
               }
 
@@ -1741,6 +1758,13 @@ async function deleteMeal(mealId, mealName) {
                                   <span class="meal-calories">
                                       <i class="fas fa-fire me-1"></i>${meal.calories} קל'
                                   </span>
+                                  <button 
+                                    class="btn btn-outline-danger btn-sm" 
+                                    onclick="deleteLoggedFood('${meal.id}', '${meal.mealName}')"
+                                    title="מחק רישום זה"
+                                    style="padding: 0.2rem 0.4rem; font-size: 0.7rem;">
+                                    <i class="fas fa-times"></i>
+                                </button>
                               </div>
                               <div class="meal-time">
                                   <i class="fas fa-clock me-1"></i>
@@ -2131,6 +2155,50 @@ async function deleteMeal(mealId, mealName) {
               card.classList.add('expanded');
           }
       }
+
+      async function deleteLoggedFood(logId, mealName) {
+    // Show confirmation dialog
+    const confirmed = confirm(
+        `⚠️ האם אתה בטוח שברצונך למחוק את הרישום?\n\n` +
+        `"${mealName}"\n\n` +
+        `פעולה זו תמחק רק את הרישום הזה ולא את הארוחה מהספרייה.`
+    );
+    
+    if (!confirmed) return;
+    
+    try {
+        // Show loading state on delete button
+        const deleteBtn = document.querySelector(`[onclick="deleteLoggedFood('${logId}', '${mealName}')"]`);
+        if (deleteBtn) {
+            deleteBtn.disabled = true;
+            deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        }
+        
+        // Delete from database
+        await db.deleteLogEntry(logId);
+        
+        // Reload the current day data to refresh the UI
+       
+            await loadDayData("today");
+        
+        
+        // Show success message in console
+        console.log(`✅ Deleted log entry: ${mealName}`);
+        
+    } catch (error) {
+        console.error('❌ Error deleting log entry:', error);
+        alert('❌ שגיאה במחיקת הרישום. נסה שוב.');
+        
+        // Restore button state on error
+        const deleteBtn = document.querySelector(`[onclick="deleteLoggedFood('${logId}', '${mealName}')"]`);
+        if (deleteBtn) {
+            deleteBtn.disabled = false;
+            deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
+        }
+    }
+}
+
+
 
 
               // Initialize app when page loads
