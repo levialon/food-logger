@@ -109,18 +109,22 @@
       .card-overlay {
         background: linear-gradient(transparent, rgba(0,0,0,0.75));
         width: 100%;
-        padding: 2rem;
+        padding: 1rem;
         color: white;
         border-radius: 0 0 var(--border-radius) var(--border-radius);
       }
 
       .meal-title {
         font-weight: 700;
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         margin-bottom: 1rem;
         text-shadow: 0 2px 8px rgba(0,0,0,0.3);
         letter-spacing: -0.01em;
       }
+.meal-card.expanded .meal-title {
+  /* Your styles here */
+  font-size: 2rem;
+}
 
       .card-stats {
         display: flex;
