@@ -116,22 +116,28 @@
 
       .meal-title {
         font-weight: 700;
-        font-size: 1.25rem;
+        font-size: 1rem;
         margin-bottom: 1rem;
         text-shadow: 0 2px 8px rgba(0,0,0,0.3);
         letter-spacing: -0.01em;
       }
+
 .meal-card.expanded .meal-title {
   /* Your styles here */
-  font-size: 3rem;
+  font-size: 2rem;
+  margin-bottom:2rem;
 }
 
 .meal-card.expanded .usage-counter 
 
 {
-      font-size:1.5rem;.
+      font-size:1.25rem;.
+     
 }
 
+.meal-card.expanded .card-stats {
+   display:block;
+}
 
       .card-stats {
         display: flex;
@@ -139,6 +145,7 @@
         //align-items: flex-start;
         font-size: 1rem;
         font-weight: 500;
+        display:none;
       }
 
       .calories-info {
@@ -157,6 +164,7 @@
         font-size: 0.8rem;
         font-weight: 500;
         backdrop-filter: blur(10px);
+       
       }
 
       /* Card Details */
