@@ -1437,16 +1437,15 @@ async function deleteMeal(mealId, mealName) {
               '<div class="empty-day">לא נרשמו ארוחות ביום זה</div>' :
               dayData.meals.map(meal => `
                   <div class="meal-entry">
-                      <div class="meal-entry-info">
-                          <span class="meal-name">${meal.mealName}</span>
-                          <span class="meal-time">
-                              <i class="fas fa-clock me-1"></i>
+                      <div class="weekday-meal-time">
+                          
+                          
                               ${meal.time}  
-                          </span>
+                         
                       </div>
-                      <span class="meal-calories">
-                          ${meal.calories} קל'
-                      </span>
+                      <span class="weekday-meal-name">${meal.mealName}</span>
+                      <span class="weekday-meal-calories">  ${meal.calories} קלוריות</span>              
+       
                   </div>
               `).join('');
 
