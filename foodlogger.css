@@ -418,6 +418,7 @@
   border-radius: 12px;
   font-family: 'Roboto', sans-serif;
   text-align: center;
+  margin-bottom:1rem;
 
       }
 
@@ -427,29 +428,24 @@
       }
 
       .nutrition-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-        padding: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
       }
 
-      .nutrition-row:last-child {
-        margin-bottom: 0;
-      }
+
 
       .nutrition-label {
-        font-weight: 600;
-        font-size: 1.2rem;
-        color: var(--on-surface);
-        letter-spacing: 0.01em;
+  font-size: 0.85rem;
+  color: #757575;
+  margin-top: 4px;
       }
 
       .nutrition-value {
-        font-weight: 300;
-        font-size: 1.5rem;
-        letter-spacing: -0.02em;
-        color: var(--success-color);
+        font-size: 2.5rem;
+        font-weight: 300; /* Thin */
+         color: var(--success-color);
       }
 
       .nutrition-value.over-goal {
@@ -474,7 +470,7 @@
       .meal-item-header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: baseline;
         margin-bottom: 1rem;
       }
 
@@ -495,9 +491,10 @@
       }
 
       .meal-time {
-        font-size: 1rem;
+        font-size: 0.6rem;
         color: var(--on-surface-variant);
         font-weight: 500;
+        margin-left:1rem;
       }
 
       /* Modal Improvements */
