@@ -685,18 +685,28 @@
       }
 
       .day-details-content {
-        padding: 2rem;
+        padding: 0.4rem 1rem 1rem 1rem;
         border-top: 1px solid var(--outline);
       }
-
+      .weekday-meal-calories {
+        margin-inline-start: auto;
+      }
+      .weekday-meal-time {
+        font-size:0.6rem;
+        color:gray;
+      }
+      .weekday-meal-name{
+        font-size:1.2rem;
+        margin-right:0.5rem;
+      }
       .meal-entry {
         background: var(--surface-color);
-        padding: 1.5rem;
-        border-radius: var(--border-radius-sm);
-        border-right: 3px solid var(--primary-color);
-        margin-bottom: 1rem;
+        padding: 0.4rem;
+        //border-radius: var(--border-radius-sm);
+        //border-right: 3px solid var(--primary-color);
+        margin-bottom: 0.4rem;
         display: flex;
-        justify-content: space-between;
+        //justify-content: space-between;
         align-items: center;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
@@ -766,7 +776,7 @@
 
 .meals-list {
   display: grid;
-  gap: 1rem;
+  gap: 0rem;
 }
 
 .empty-day {
