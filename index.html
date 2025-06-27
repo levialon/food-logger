@@ -1458,26 +1458,16 @@ async function deleteMeal(mealId, mealName) {
                           <i class="fas fa-chevron-down"></i>
                       </div>
 
-                      <div class="day-header">
-                          <h5 class="day-title">${formatHebrewDate2(dayData.dateObj)}</h5>
-                      </div>
-
-                      <div class="nutrition-summary d-flex justify-content-evenly">
-                          <div class="nutrition-item">
-                              <span class="nutrition-value ${statusClass}">
-                                  ${dayData.totalCalories} קל'
-                              </span>
+        
+                      <div class="weekday-summary d-flex">
+                          <div class="weekday-item ${statusClass}">
+                                <div class="weekday-date"> ${formatHebrewDate2(dayData.dateObj)}</div>
+                                <strong>${dayData.totalCalories}</strong>
+                                קלוריות ב-
+                                <strong>${dayData.meals.length}</strong>
+                                  ארוחות                              
                           </div>
-                          <div class="nutrition-item">
-                              <span class="nutrition-value">
-                                  ${dayData.totalCarbs} גרם פחמ'
-                              </span>
-                          </div>
-                          <div class="nutrition-item">
-                                <span class="nutrition-value">
-                                  ${dayData.meals.length} ארוחות
-                              </span>
-                          </div>
+                          
                       </div>
                   </div>
 
