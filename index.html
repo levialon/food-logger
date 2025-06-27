@@ -556,6 +556,10 @@ This IS PAGE
                   try {
                       const meals = await db.getMeals();
                       const mealsGrid = document.getElementById('mealsGrid');
+                      let bg = document.getElementById('bgFocus');
+                      if (bg) {
+                        bg.classList.add('d-none');
+                      }
 
                       // Clear existing content
                       mealsGrid.innerHTML = '';
@@ -589,8 +593,8 @@ This IS PAGE
               function createMealCard(meal) {
                   return `
                       <div class="col-4">
-                          <div class="meal-card" onclick="toggleCard(this)" data-meal-id="${meal.id}" data-usage="${meal.usageCount}">
-                              <div class="card-closed" style="background-image: url('${meal.image}');">
+                          <div class="meal-card"  data-meal-id="${meal.id}" data-usage="${meal.usageCount}">
+                              <div class="card-closed" style="background-image: url('${meal.image}');" onclick="toggleCard(this.parentElement)">
                                   <div class="expand-icon">
                                       <i class="fas fa-chevron-down"></i>
                                   </div>
@@ -911,6 +915,7 @@ async function deleteMeal(mealId, mealName) {
               }
 
               function toggleCard(card) {
+                console.log('toggleCard called from:', card);
                   const details = card.querySelector('.card-details');
                   const icon = card.querySelector('.expand-icon i');
 
@@ -944,7 +949,7 @@ async function deleteMeal(mealId, mealName) {
               }
 
               async function eatNow(event, mealId, mealName, calories) {
-                  event.stopPropagation(); // Prevent card from closing
+                  //event.stopPropagation(); // Prevent card from closing
 
                   if (!db) {
                       console.error('Database not initialized');
@@ -965,17 +970,18 @@ async function deleteMeal(mealId, mealName) {
                       btn.innerHTML = '<i class="fas fa-check me-2"></i>נוסף!';
                       btn.style.background = '#28a745';
 
-                      // Update usage count in UI by reloading meals
-                      await loadMealsFromDB();
+                      
 
                       console.log(`✅ Logged: ${mealName} (${calories} calories) at ${logEntry.time}`);
 
                       // Reset button after 2 seconds
-                      setTimeout(() => {
+                      setTimeout(async () => {
                           btn.innerHTML = originalText;
                           btn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
                           btn.disabled = false;
-                      }, 2000);
+                          // Update usage count in UI by reloading meals
+                          await loadMealsFromDB();
+                      }, 1000);
 
                   } catch (error) {
                       console.error('❌ Error logging meal:', error);
