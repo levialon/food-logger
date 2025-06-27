@@ -553,7 +553,7 @@
       /* Camera Button */
       .camera-btn {
         width: 100%;
-        padding: 2rem;
+        padding: 0.5rem;
         border: 3px dashed var(--outline);
         border-radius: var(--border-radius-sm);
         background: var(--background-color);
