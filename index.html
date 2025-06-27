@@ -178,15 +178,10 @@ This IS PAGE
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="addMealModalLabel">
-              <i class="fas fa-plus-circle me-2"></i>הוסף ארוחה חדשה
+            <h1 class="modal-title fs-5" id="addMealModalLabel" data-bs-dismiss="modal">
+              הוסף ארוחה חדשה
             </h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="סגור"
-            ></button>
+           
           </div>
           <div class="modal-body">
             <form>
@@ -223,7 +218,7 @@ This IS PAGE
                 <textarea
                   class="form-control"
                   id="ingredients"
-                  rows="5"
+                  rows="4"
                   placeholder="תאר את המרכיבים..."
                 ></textarea>
               </div>
@@ -238,7 +233,7 @@ This IS PAGE
                   />
                 </div>
                 <div class="col-4">
-                  <label for="carbs" class="form-label">פחמימות (גרם)</label>
+                  <label for="carbs" class="form-label">פחמימות</label>
                   <input
                     type="number"
                     class="form-control"
@@ -247,7 +242,7 @@ This IS PAGE
                   />
                 </div>
                 <div class="col-4">
-                  <label for="carbs" class="form-label">חלבונים (גרם)</label>
+                  <label for="carbs" class="form-label">חלבונים</label>
                   <input
                     type="number"
                     class="form-control"
@@ -976,9 +971,9 @@ async function deleteMeal(mealId, mealName) {
 
                       // Reset button after 2 seconds
                       setTimeout(async () => {
-                          btn.innerHTML = originalText;
-                          btn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                          btn.disabled = false;
+                         // btn.innerHTML = originalText;
+                         // btn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                         // btn.disabled = false;
                           // Update usage count in UI by reloading meals
                           await loadMealsFromDB();
                       }, 1000);
