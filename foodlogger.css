@@ -690,13 +690,14 @@
       }
       .weekday-meal-calories {
         margin-inline-start: auto;
+        font-weight:400;
       }
       .weekday-meal-time {
         font-size:0.6rem;
         color:gray;
       }
       .weekday-meal-name{
-        font-size:1.2rem;
+        font-size:1rem;
         margin-right:0.5rem;
       }
       .meal-entry {
