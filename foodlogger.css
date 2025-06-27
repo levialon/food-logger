@@ -100,7 +100,7 @@
   }
 
       .card-closed {
-        height: 200px;
+        height: 150px;
         position: relative;
         background-size: cover;
         background-position: center;
@@ -729,7 +729,7 @@
         margin-left: 0.5rem;
       }
 
-      /* Responsive adjustments */
+      /* Responsive adjustments 
       @media (max-width: 480px) {
         .container-fluid {
           padding: 0 1rem;
@@ -746,7 +746,7 @@
         .calories-info {
           font-size: 1rem;
         }
-      }
+      }*/
 
 .camera-input {
   display: none;
@@ -774,4 +774,3 @@
   flex-direction: column;
   align-items: center;
 }
-
