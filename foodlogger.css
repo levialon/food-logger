@@ -600,7 +600,7 @@
 
       .summary-grid {
   display: grid;
-  grid-template-columns: auto auto 1fr auto;;
+  grid-template-columns: auto auto auto 1fr;
   gap: 16px;
   padding: 16px;
   background-color: #ffffff;
