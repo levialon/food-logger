@@ -390,7 +390,18 @@
         font-size: 1.5rem;
         margin-bottom: 0.25rem;
       }
+      .weekday-item {
+        font-size:1.25rem;
+      }
+.weekday-item strong {
 
+}
+
+.weekday-date {
+      font-size:0.8rem;
+      color:gray;
+}
+      
       /* Daily Summary */
       .daily-summary {
         background: var(--surface-color);
@@ -649,7 +660,7 @@
       }
 
       .day-card-closed {
-        padding: 2rem;
+        padding: 1rem;
         position: relative;
         border-right: 6px solid var(--success-color);
       }
