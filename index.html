@@ -1,1619 +1,780 @@
-<!DOCTYPE html>
-<html lang="he" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <title>יומן תזונה</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="foodlogger.css">
-    <!--<style>
-       
-    </style> -->
-  </head>
-  <body>
-    <!-- App Container with 3 pages -->
-    <div class="app-container" id="appContainer">
-      <!-- Page 1: Meals Library -->
-      <div class="page">
 
-        <div class="popup-backdrop d-none" id="bgFocus">
-        </div>
-        <!-- Header -->
-        <div class="header">
-          <div
-            class="container-fluid d-flex align-items-center justify-content-between"
-          >
-            <h1 class="h3 mb-0 text-center">
-              יומן תזונה
-            </h1>
-            <button
-              type="button"
-              class="btn btn-outline-danger btn-sm"
-              id="resetDatabaseBtn"
-              onclick="resetDatabase()"
-            >
-              איפוס
-            </button>
-          </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="container-fluid px-3">
-          <!-- Search Bar -->
-          <div class="search-container mb-3">
-            <div class="input-group">
-              <span class="input-group-text bg-white border-end-0">
-                <i class="fas fa-search text-muted minimal-icon"></i>
-              </span>
-              <input
-                type="text"
-                class="form-control border-start-0 ps-0"
-                id="searchInput"
-                placeholder="חפש ארוחה..."
-                onkeyup="filterMeals()"
-              />
-              <button
-                class="btn btn-outline-secondary"
-                type="button"
-                id="clearSearch"
-                onclick="clearSearch()"
-                style="display: none;"
-              >
-                X
-              </button>
-            </div>
-          </div>
-
-          <!-- Meal Cards Grid (loaded from database) -->
-          <div class="row g-2" id="mealsGrid">
-            <!-- Meals will be loaded from database -->
-          </div>
-
-          <!-- No Results Message -->
-          <div id="noResultsMessage" class="no-results" style="display: none;">
-            <i class="fas fa-search"></i>
-            <div>לא נמצאו ארוחות התואמות לחיפוש</div>
-            <small>נסה לחפש במילים אחרות</small>
-          </div>
-        </div>
-      </div>
-
-      <!-- Page 2: Today's Summary -->
-      <div class="page">
-        <div class="header">
-          <div class="container-fluid">
-            <h1 class="h3 mb-0 text-center">
-                היום
-            </h1>
-          </div>
-        </div>
-
-        <div class="container-fluid px-3">
-          <div class="daily-summary">
-            <div class="date-header">
-              <i class="fas fa-calendar me-2"></i>
-              יום ראשון, 22 יוני 2025
-            </div>
-
-            <div class="nutrition-summary over-goal">
-              <div class="nutrition-row">
-                <span class="nutrition-label">
-                  <i class="fas fa-fire me-1"></i>קלוריות
-                </span>
-                <span class="nutrition-value over-goal">1,950 / 1,700</span>
-              </div>
-              <div class="nutrition-row">
-                <span class="nutrition-label">
-                  <i class="fas fa-seedling me-1"></i>פחמימות
-                </span>
-                <span class="nutrition-value">185 גרם</span>
-              </div>
-              <div class="nutrition-row">
-                <span class="nutrition-label">
-                  <i class="fas fa-dumbbell me-1"></i>חלבון
-                </span>
-                <span class="nutrition-value">95 גרם</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Page 3: Yesterday's Summary -->
-
-      <div class="page">
-        
-This IS PAGE
-      </div>
-    </div> <!-- APP CONTAINER -->
-
-    <!-- Bottom Tab Navigation -->
-    <div class="bottom-tabs">
-      <ul class="tabs">
-        <li class="tab active" onclick="switchTab(0)">
-          <i class="fas fa-utensils"></i>
-          <span>ארוחות</span>
-        </li>
-        <li class="tab" onclick="switchTab(1)">
-          <i class="fas fa-calendar-day"></i>
-          <span>היום</span>
-        </li>
-        <li class="tab" onclick="switchTab(2)">
-          <i class="fas fa-calendar-week"></i>
-          <span>שבועי</span>
-        </li>
-      </ul>
-    </div>
-
-    <!-- Floating Add Button (only visible on meals page) -->
-    <button
-      class="btn btn-warning add-btn d-flex align-items-center justify-content-center"
-      id="addBtn"
-      data-bs-toggle="modal"
-      data-bs-target="#addMealModal"
-    >
-      <i class="fas fa-plus fa-lg"></i>
-    </button>
-
-    <!-- Add Meal Modal -->
-    <div
-      class="modal fade"
-      id="addMealModal"
-      tabindex="-1"
-      aria-labelledby="addMealModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="addMealModalLabel" data-bs-dismiss="modal">
-              הוסף ארוחה חדשה
-            </h1>
-           
-          </div>
-          <div class="modal-body">
-            <form>
-              <div class="mb-3">
-                <input
-                  type="text"
-                  class="form-control"
-                  id="mealName"
-                  placeholder="שם הארוחה"
-                />
-              </div>
-              <div class="mb-3">
-                <input
-                  type="file"
-                  class="camera-input"
-                  id="mealImageInput"
-                  accept="image/*"
-                  capture="environment"
-                  onchange="handleImageCapture(this)"
-                />
-                <div
-                  class="camera-btn"
-                  onclick="document.getElementById('mealImageInput').click()"
-                  id="cameraButton"
-                >
-                  <div class="text-center">
-                    <i class="fas fa-camera fa-2x mb-2"></i>
-                    <div>לחץ לצילום</div>
-                    <small>או בחר תמונה מהגלריה</small>
-                  </div>
-                </div>
-              </div>
-              <div class="mb-3">
-                <textarea
-                  class="form-control"
-                  id="ingredients"
-                  rows="4"
-                  placeholder="תאר את המרכיבים..."
-                ></textarea>
-              </div>
-              <div class="row">
-                <div class="col-4">
-                  <label for="calories" class="form-label">קלוריות</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="calories"
-                    placeholder="0"
-                  />
-                </div>
-                <div class="col-4">
-                  <label for="carbs" class="form-label">פחמימות</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="carbs"
-                    placeholder="0"
-                  />
-                </div>
-                <div class="col-4">
-                  <label for="carbs" class="form-label">חלבונים</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="protein"
-                    placeholder="0"
-                  />
-                </div>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              ביטול
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              onclick="addNewMeal()"
-            >
-              שמור ארוחה
-            </button>
-           <button
-              type="button"
-              class="btn btn-success"
-              onclick="calcNewMeal()"
-              style="background: var(--secondary-color); border: none; ">
-              חישוב אוטומטי
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-              let currentPage = 0;
-              let db = null;
-
-              // Simple IndexedDB wrapper
-              class FoodLoggerDB {
-                  constructor() {
-                      this.db = null;
-                      this.DAILY_GOAL = 1700;
-                  }
-
-                  async init() {
-                      return new Promise((resolve, reject) => {
-                          const request = indexedDB.open('FoodLoggerDB', 1);
-
-                          request.onupgradeneeded = (event) => {
-                              const db = event.target.result;
-
-                              // Meals store
-                              if (!db.objectStoreNames.contains('meals')) {
-                                  const mealsStore = db.createObjectStore('meals', { keyPath: 'id' });
-                                  mealsStore.createIndex('usageCount', 'usageCount');
-                              }
-
-                              // Daily logs store
-                              if (!db.objectStoreNames.contains('dailyLogs')) {
-                                  const logsStore = db.createObjectStore('dailyLogs', { keyPath: 'id' });
-                                  logsStore.createIndex('date', 'date');
-                              }
-                          };
-
-                          request.onsuccess = () => {
-                              this.db = request.result;
-                              resolve();
-                          };
-                          request.onerror = () => reject(request.error);
-                      });
-                  }
-
-                  async addMeal(name, image, ingredients, calories, carbs, protein) {
-                      const meal = {
-                          id: `meal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                          name,
-                          image,
-                          ingredients,
-                          calories,
-                          carbs,
-                          protein,
-                          usageCount: 0, // Start with 0 usage
-                          createdAt: new Date().toISOString()
-                      };
-
-                      const store = this.db.transaction(['meals'], 'readwrite').objectStore('meals');
-                      return new Promise((resolve, reject) => {
-                          const request = store.add(meal);
-                          request.onsuccess = () => resolve(meal);
-                          request.onerror = () => reject(request.error);
-                      });
-                  }
-
-                  async getMeals() {
-                      const store = this.db.transaction(['meals'], 'readonly').objectStore('meals');
-                      return new Promise((resolve, reject) => {
-                          const request = store.getAll();
-                          request.onsuccess = () => {
-                              const meals = request.result;
-                              // Sort by usage count (highest first)
-                              meals.sort((a, b) => b.usageCount - a.usageCount);
-                              resolve(meals);
-                          };
-                          request.onerror = () => reject(request.error);
-                      });
-                  }
-
-                  async searchMeals(term) {
-                      const meals = await this.getMeals();
-                      return meals.filter(meal =>
-                          meal.name.includes(term) || meal.ingredients.includes(term)
-                      );
-                  }
-                  async getMeal(id) {
-                     const store = this.db.transaction(['meals'], 'readonly').objectStore('meals');
-                      return new Promise((resolve, reject) => {
-                    const request = store.get(id);
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-                }
-                  async eatMeal(mealId) {
-                      const meal = await this.getMeal(mealId);
-                      if (!meal) throw new Error('Meal not found');
-
-                      const now = new Date();
-                      const today = now.toISOString().split('T')[0];
-                      const time = now.toTimeString().substring(0, 5);
-
-                      // Create log entry
-                      const log = {
-                          id: `log_${today}_${Date.now()}`,
-                          date: today,
-                          mealId,
-                          mealName: meal.name,
-                          time,
-                          calories: meal.calories,
-                          carbs: meal.carbs,
-                          protein: meal.protein,
-                          loggedAt: now.toISOString()
-                      };
-
-                      // Update meal usage count
-                      meal.usageCount += 1;
-
-                      const transaction = this.db.transaction(['meals', 'dailyLogs'], 'readwrite');
-                      await new Promise((resolve, reject) => {
-                          const updateMeal = transaction.objectStore('meals').put(meal);
-                          const addLog = transaction.objectStore('dailyLogs').add(log);
-
-                          transaction.oncomplete = () => resolve();
-                          transaction.onerror = () => reject(transaction.error);
-                      });
-
-                      return log;
-                  }
-
-                  async getDayTotals(date) {
-                      const store = this.db.transaction(['dailyLogs'], 'readonly').objectStore('dailyLogs');
-                      const index = store.index('date');
-
-                      return new Promise((resolve, reject) => {
-                          const request = index.getAll(date);
-                          request.onsuccess = () => {
-                              const logs = request.result;
-                              const totals = logs.reduce((total, log) => ({
-                                  calories: total.calories + log.calories,
-                                  carbs: total.carbs + log.carbs,
-                                  protein: total.protein + log.protein
-                              }), { calories: 0, carbs: 0, protein: 0 });
-                              resolve(totals);
-                          };
-                          request.onerror = () => reject(request.error);
-                      });
-                  }
-
-                  async getDayMeals(date) {
-                      const store = this.db.transaction(['dailyLogs'], 'readonly').objectStore('dailyLogs');
-                      const index = store.index('date');
-
-                      return new Promise((resolve, reject) => {
-                          const request = index.getAll(date);
-                          request.onsuccess = () => {
-                              const logs = request.result;
-                              logs.sort((a, b) => a.time.localeCompare(b.time));
-                              resolve(logs);
-                          };
-                          request.onerror = () => reject(request.error);
-                      });
-                  }
-
-                  async clearAllData() {
-                      return new Promise((resolve, reject) => {
-                          const transaction = this.db.transaction(['meals', 'dailyLogs'], 'readwrite');
-
-                          const clearMeals = transaction.objectStore('meals').clear();
-                          const clearLogs = transaction.objectStore('dailyLogs').clear();
-
-                          transaction.oncomplete = () => {
-                              console.log('✅ All database data cleared');
-                              resolve();
-                          };
-                          transaction.onerror = () => {
-                              console.error('❌ Error clearing database:', transaction.error);
-                              reject(transaction.error);
-                          };
-                      });
-                  }
-          async deleteMeal(mealId) {
-              return new Promise((resolve, reject) => {
-              const transaction = this.db.transaction(['meals'], 'readwrite');
-              const store = transaction.objectStore('meals');
-                const request = store.delete(mealId);
-        
-        request.onsuccess = () => {
-            console.log(`✅ Meal deleted: ${mealId}`);
-            resolve();
-        };
-        
-        request.onerror = () => {
-            console.error(`❌ Error deleting meal: ${mealId}`, request.error);
-            reject(request.error);
-                };
-            });
-        }
-   async deleteAllLogsForMeal(mealId) {
-    return new Promise((resolve, reject) => {
-        const transaction = this.db.transaction(['dailyLogs'], 'readwrite');
-        const store = transaction.objectStore('dailyLogs');
-        
-        // Get all logs and filter by mealId
-        const request = store.getAll();
-        
-        request.onsuccess = () => {
-            const allLogs = request.result;
-            const logsToDelete = allLogs.filter(log => log.mealId === mealId);
-            
-            if (logsToDelete.length === 0) {
-                console.log(`✅ No logs found for meal: ${mealId}`);
-                resolve();
-                return;
-            }
-            
-            // Delete each matching log
-            let deletedCount = 0;
-            logsToDelete.forEach(log => {
-                const deleteRequest = store.delete(log.id);
-                deleteRequest.onsuccess = () => {
-                    deletedCount++;
-                    if (deletedCount === logsToDelete.length) {
-                        console.log(`✅ Deleted ${deletedCount} logs for meal: ${mealId}`);
-                        resolve();
-                    }
-                };
-                deleteRequest.onerror = () => reject(deleteRequest.error);
-            });
-        };
-        
-        request.onerror = () => {
-            console.error(`❌ Error getting logs for meal: ${mealId}`, request.error);
-            reject(request.error);
-        };
-    });
-}
-    async deleteLogEntry(logId) {
-        return new Promise((resolve, reject) => {
-        const transaction = this.db.transaction(['dailyLogs'], 'readwrite');
-        const store = transaction.objectStore('dailyLogs');
-        const request = store.delete(logId);
-        
-        request.onsuccess = () => {
-            console.log(`✅ Deleted log entry: ${logId}`);
-            resolve();
-        };
-        
-        request.onerror = () => {
-            console.error(`❌ Error deleting log entry: ${logId}`, request.error);
-            reject(request.error);
-        };
-    });
-}
-
-              }
-
-              // Initialize database and load initial data
-              async function initializeApp() {
-                  try {
-                      db = new FoodLoggerDB();
-                      await db.init();
-
-                      // Load existing meals into UI (will be empty on first run)
-                      await loadMealsFromDB();
-                      console.log('App initialized successfully');
-                  } catch (error) {
-                      console.error('Failed to initialize app:', error);
-                  }
-              }
-
-              // Load meals from database and display in UI
-              async function loadMealsFromDB() {
-                  try {
-                      const meals = await db.getMeals();
-                      const mealsGrid = document.getElementById('mealsGrid');
-                      let bg = document.getElementById('bgFocus');
-                      if (bg) {
-                        bg.classList.add('d-none');
-                      }
-
-                      // Clear existing content
-                      mealsGrid.innerHTML = '';
-
-                      if (meals.length === 0) {
-                          // Show empty state
-                          mealsGrid.innerHTML = `
-                              <div class="col-12">
-                                  <div class="text-center py-5">
-                                      <i class="fas fa-utensils fa-3x text-muted mb-3"></i>
-                                      <h4 class="text-muted">אין ארוחות עדיין</h4>
-                                      <p class="text-muted">לחץ על כפתור ה-+ כדי להוסיף את הארוחה הראשונה שלך</p>
-                                  </div>
-                              </div>
-                          `;
-                      } else {
-                          // Create meal cards
-                          meals.forEach(meal => {
-                              const cardHtml = createMealCard(meal);
-                              mealsGrid.insertAdjacentHTML('beforeend', cardHtml);
-                          });
-                      }
-
-                      console.log(`Loaded ${meals.length} meals from database`);
-                  } catch (error) {
-                      console.error('Error loading meals:', error);
-                  }
-              }
-
-              // Create HTML for a meal card
-              function createMealCard(meal) {
-                  return `
-                      <div class="col-4">
-                          <div class="meal-card"  data-meal-id="${meal.id}" data-usage="${meal.usageCount}">
-                              <div class="card-closed" style="background-image: url('${meal.image}');" onclick="toggleCard(this.parentElement)">
-                                  <div class="expand-icon">
-                                      <i class="fas fa-chevron-down"></i>
-                                  </div>
-                                  <div class="card-overlay">
-                                      <h5 class="meal-title">${meal.name}</h5>
-                                      <div class="card-stats">
-                                          <span class="usage-counte">
-                                              ${meal.calories} קלוריות
-                                          </span>
-                                          <span class="usage-counter">
-                                              ${meal.usageCount} פעמים
-                                          </span>
-                                          <button class="btn btn-outline-danger btn-sm" onclick="deleteMeal('${meal.id}', '${meal.name}')">X</button>
-                                      </div>
-                                  </div>
-                              </div>
-
-                              <div class="card-details">
-                                  <div class="card-details-content">
-                                      <p class="ingredients-text">
-                                          ${meal.ingredients}
-                                      </p>
-                                       <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-                                          <!--<span class="badge bg-primary stats-badge">
-                                              ${meal.calories} קלוריות
-                                          </span>-->
-                                          <span class="badge bg-success stats-badge">
-                                              ${meal.carbs} גרם פחמימות
-                                          </span>
-                                          <span class="badge bg-info stats-badge">
-                                              ${meal.protein} גרם חלבון
-                                          </span>
-                                      </div>
-                                      <button class="btn eat-now-btn" onclick="eatNow(event, '${meal.id}', '${meal.name}', ${meal.calories})">
-                                          אכלתי עכשיו
-                                      </button>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  `;
-              }
-
-              // Convert file to compressed base64
-              function compressAndConvertImage(file, maxWidth = 400, quality = 0.7) {
-                  return new Promise((resolve) => {
-                      const canvas = document.createElement('canvas');
-                      const ctx = canvas.getContext('2d');
-                      const img = new Image();
-
-                      img.onload = function() {
-                          // Calculate new dimensions
-                          let { width, height } = img;
-
-                          if (width > maxWidth) {
-                              height = (height * maxWidth) / width;
-                              width = maxWidth;
-                          }
-
-                          // Set canvas size
-                          canvas.width = width;
-                          canvas.height = height;
-
-                          // Draw and compress
-                          ctx.drawImage(img, 0, 0, width, height);
-
-                          // Convert to compressed base64
-                          const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
-                          resolve(compressedBase64);
-                      };
-
-                      // Create object URL for the image
-                      img.src = URL.createObjectURL(file);
-                  });
-              }
-
-
-
-              async function calcNewMeal()
-              {
-                // Fill with ChatGPT API
-              const BACKEND_URL = 'https://openai-backend-k753.onrender.com/ask';
-                  const input = document.getElementById('ingredients').value.trim();
-
-            if (!input) {
-              alert('no input');
-              return;
-            }
-
-            const question = `
-      הערך התזונתי של הארוחה הבאה: ${input}.
-      החזר רק את שלושת המספרים, מופרדים בפסיקים:
-      קלוריות, פחמימות בגרם, חלבון בגרם.
-      למשל: 450, 12, 22
-      ללא טקסט נוסף.
-            `.trim();
-
-            try {
-              const response = await fetch(BACKEND_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question })
-              });
-
-              const data = await response.json();
-
-              if (response.ok) {
-                const match = data.answer?.trim().match(/(\d+)[, ]+(\d+)[, ]+(\d+)/);
-                if (match) {
-                  const [_, cal, carbs, protein] = match;
-                  document.getElementById('calories').value = cal;
-                  document.getElementById('carbs').value = carbs;
-                  document.getElementById('protein').value = protein;
-
-              //alert("cal:"+cal+" | carbs: "+carbs +" protein:" + protein);
-
-                } else {
-                  alert('לא התקבלה תשובה מתאימה.');
-                }
-              } else {
-                  alert(data.error+"/n"+data.detail);
-                /*resultDiv.innerHTML = `
-                  <div class="text-danger">
-                    <strong>שגיאה:</strong> ${data.error}<br>
-                    <strong>פרטים:</strong> ${data.detail}<br>
-                    <strong>הצעה:</strong> ${data.suggestion || 'נסה שוב מאוחר יותר'}
-                  </div>
-                `;*/
-              }
-            } catch (err) {
-              //resultDiv.innerHTML = `<span class="text-danger">שגיאת רשת: ${err.message}</span>`;
-            }
-          }
-
-async function deleteMeal(mealId, mealName) {
-    // Show confirmation dialog
-    const confirmed = confirm(
-        `⚠️ האם אתה בטוח שברצונך למחוק את הארוחה?\n\n` +
-        `"${mealName}"\n\n` +
-        `פעולה זו תמחק:\n` +
-        `• את הארוחה מהספרייה\n` +
-        `• את כל הרישומים של הארוחה הזו\n\n` +
-        `לא ניתן לבטל פעולה זו!`
-    );
-    
-    if (!confirmed) return;
-    
-    try {
-        // Show loading state on delete button
-        const deleteBtn = document.querySelector(`[onclick="deleteMeal('${mealId}', '${mealName}')"]`);
-        if (deleteBtn) {
-            deleteBtn.disabled = true;
-            deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>מוחק...';
-        }
-        
-        // Delete from database
-        await db.deleteMeal(mealId);
-        
-        // Also delete all daily logs for this meal
-        await db.deleteAllLogsForMeal(mealId);
-        
-        // Reload meals to update UI
-        await loadMealsFromDB();
-        
-        // Show success message
-        console.log(`✅ Deleted meal: ${mealName}`);
-        
-        // Close any expanded cards since the meal is gone
-        document.querySelectorAll('.meal-card.expanded').forEach(card => {
-            const details = card.querySelector('.card-details');
-            const icon = card.querySelector('.expand-icon i');
-            
-            details.classList.remove('show');
-            icon.classList.remove('fa-chevron-up');
-            icon.classList.add('fa-chevron-down');
-            card.classList.remove('expanded');
-        });
-        
-    } catch (error) {
-        console.error('❌ Error deleting meal:', error);
-        alert('❌ שגיאה במחיקת הארוחה. נסה שוב.');
-        
-        // Restore button state on error
-        const deleteBtn = document.querySelector(`[onclick="deleteMeal('${mealId}', '${mealName}')"]`);
-        if (deleteBtn) {
-            deleteBtn.disabled = false;
-            deleteBtn.innerHTML = '<i class="fas fa-trash me-2"></i>מחק ארוחה';
-        }
-    }
-}
-      
-              // Add new meal to database
-              async function addNewMeal() {
-                  const name = document.getElementById('mealName').value.trim();
-                  const ingredients = document.getElementById('ingredients').value.trim();
-                  const calories = parseInt(document.getElementById('calories').value) || 0;
-                  const carbs = parseInt(document.getElementById('carbs').value) || 0;
-                  const protein = parseInt(document.getElementById('protein').value) || 0;
-                  const imageInput = document.getElementById('mealImageInput');
-
-                  if (!name) {
-                      alert('אנא מלא את שם הארוחה');
-                      return;
-                  }
-
-                  if (!ingredients) {
-                      alert('אנא תאר את מרכיבי הארוחה');
-                      return;
-                  }
-
-                  if (calories <= 0) {
-                      alert('אנא הכנס מספר קלוריות תקין');
-                      return;
-                  }
-
-                  try {
-                      // Show loading state
-                      const saveBtn = document.querySelector('#addMealModal .btn-primary');
-                      const originalText = saveBtn.innerHTML;
-                      saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>שומר...';
-                      saveBtn.disabled = true;
-
-                      let imageData = 'placeholder.png'; //`https://picsum.photos/400/400?random=${Date.now()}`; // Default placeholder DISABLED PLACEHOLER IMAGE
-
-                      // If user selected an image, compress and convert to base64
-                      if (imageInput.files && imageInput.files[0]) {
-                          const file = imageInput.files[0];
-
-                          // Check file size (warn if over 5MB)
-                          if (file.size > 5 * 1024 * 1024) {
-                              console.warn('Large image file, compressing...');
-                          }
-
-                          imageData = await compressAndConvertImage(file, 400, 0.7);
-                          console.log(`Image compressed from ${Math.round(file.size/1024)}KB to ${Math.round(imageData.length*0.75/1024)}KB`);
-                      }
-
-                      // Add to database
-                      const meal = await db.addMeal(name, imageData, ingredients, calories, carbs, protein);
-
-                      // Reload meals in UI
-                      await loadMealsFromDB();
-
-                      // Close modal and reset form
-                      const modal = bootstrap.Modal.getInstance(document.getElementById('addMealModal'));
-                      modal.hide();
-                      resetAddMealForm();
-
-                      // Show success message
-                      console.log('✅ Added new meal:', meal.name);
-
-                      // Restore button state
-                      saveBtn.innerHTML = originalText;
-                      saveBtn.disabled = false;
-
-                  } catch (error) {
-                      console.error('❌ Error adding meal:', error);
-                      alert('שגיאה בהוספת הארוחה. נסה שוב.');
-
-                      // Restore button state
-                      const saveBtn = document.querySelector('#addMealModal .btn-primary');
-                      saveBtn.innerHTML = 'שמור ארוחה';
-                      saveBtn.disabled = false;
-                  }
-              }
-
-              // Reset the add meal form
-              function resetAddMealForm() {
-                  document.querySelector('#addMealModal form').reset();
-                  const cameraButton = document.getElementById('cameraButton');
-                  cameraButton.innerHTML = `
-                      <div class="text-center">
-                          <i class="fas fa-camera fa-2x mb-2"></i>
-                          <div>לחץ לצילום</div>
-                          <small>או בחר תמונה מהגלריה</small>
-                      </div>
-                  `;
-                  cameraButton.classList.remove('has-image');
-              }
-
-              function switchTab(pageIndex) {
-                  currentPage = pageIndex;
-
-                  // Update tab active state
-                  document.querySelectorAll('.tab').forEach((tab, index) => {
-                      if (index === pageIndex) {
-                          tab.classList.add('active');
-                      } else {
-                          tab.classList.remove('active');
-                      }
-                  });
-
-                  // Move to the page
-                  const container = document.getElementById('appContainer');
-
-                  const page = container.querySelectorAll('.page')[pageIndex];
-                  page.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-                  window.scrollTo(0, 0);
-
-          //        container.style.transform = `translateX(${pageIndex * 100}vw)`;
-
-                  // Show/hide add button based on page
-                  const addBtn = document.getElementById('addBtn');
-                  if (pageIndex === 0) {
-                      addBtn.style.display = 'flex';
-                  } else {
-                      addBtn.style.display = 'none';
-                  }
-
-                  if (pageIndex === 1) {
-                   loadDayData();
-                  } else if (pageIndex === 2) {
-                    loadWeeklyOverview();
-                  //loadDayData('yesterday');
-                }
-                  // Load daily summary data for summary pages
-                  //loadDailySummary(pageIndex);
-              }
-
-              function toggleCard(card) {
-                console.log('toggleCard called from:', card);
-                  const details = card.querySelector('.card-details');
-                  const icon = card.querySelector('.expand-icon i');
-
-                  // Toggle the expanded state
-                  if (details.classList.contains('show')) {
-                      details.classList.remove('show');
-                      icon.classList.remove('fa-chevron-up');
-                      icon.classList.add('fa-chevron-down');
-                      card.classList.remove('expanded');
-                      document.getElementById('bgFocus').classList.add('d-none');
-                  } else {
-                      // Close all other cards first
-                      document.querySelectorAll('.card-details.show').forEach(detail => {
-                          detail.classList.remove('show');
-                      });
-                      document.querySelectorAll('.expand-icon i').forEach(expandIcon => {
-                          expandIcon.classList.remove('fa-chevron-up');
-                          expandIcon.classList.add('fa-chevron-down');
-                      });
-                      document.querySelectorAll('.meal-card.expanded').forEach(expandedCard => {
-                          expandedCard.classList.remove('expanded');
-                      });
-
-                      // Open this card
-                      document.getElementById('bgFocus').classList.remove('d-none');
-                      details.classList.add('show');
-                      icon.classList.remove('fa-chevron-down');
-                      icon.classList.add('fa-chevron-up');
-                      card.classList.add('expanded');
-                  }
-              }
-
-              async function eatNow(event, mealId, mealName, calories) {
-                  //event.stopPropagation(); // Prevent card from closing
-
-                  if (!db) {
-                      console.error('Database not initialized');
-                      return;
-                  }
-
-                  try {
-                      // Show loading state
-                      const btn = event.target;
-                      const originalText = btn.innerHTML;
-                      btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>מוסיף...';
-                      btn.disabled = true;
-
-                      // Log the meal
-                      const logEntry = await db.eatMeal(mealId);
-
-                      // Show success state
-                      btn.innerHTML = '<i class="fas fa-check me-2"></i>נוסף!';
-                      btn.style.background = '#28a745';
-
-                      
-
-                      console.log(`✅ Logged: ${mealName} (${calories} calories) at ${logEntry.time}`);
-
-                      // Reset button after 2 seconds
-                      setTimeout(async () => {
-                         // btn.innerHTML = originalText;
-                         // btn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                         // btn.disabled = false;
-                          // Update usage count in UI by reloading meals
-                          await loadMealsFromDB();
-                      }, 1000);
-
-                  } catch (error) {
-                      console.error('❌ Error logging meal:', error);
-
-                      // Show error state
-                      const btn = event.target;
-                      btn.innerHTML = '<i class="fas fa-times me-2"></i>שגיאה';
-                      btn.style.background = '#dc3545';
-
-                      setTimeout(() => {
-                          btn.innerHTML = `<i class="fas fa-plus me-2"></i>אכלתי עכשיו`;
-                          btn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                          btn.disabled = false;
-                      }, 2000);
-                  }
-              }
-
-              async function filterMeals() {
-                  const searchInput = document.getElementById('searchInput');
-                  const clearButton = document.getElementById('clearSearch');
-                  const searchTerm = searchInput.value.trim();
-                  const noResultsMessage = document.getElementById('noResultsMessage');
-
-                  // Show/hide clear button
-                  if (searchTerm.length > 0) {
-                      clearButton.style.display = 'block';
-                  } else {
-                      clearButton.style.display = 'none';
-                  }
-
-                  // Only filter after 2 characters
-                  if (searchTerm.length < 2) {
-                      // Show all meals
-                      await loadMealsFromDB();
-                      noResultsMessage.style.display = 'none';
-                      return;
-                  }
-
-                  try {
-                      // Search in database
-                      const meals = await db.searchMeals(searchTerm);
-                      const mealsGrid = document.getElementById('mealsGrid');
-
-                      // Clear and show results
-                      mealsGrid.innerHTML = '';
-
-                      if (meals.length === 0) {
-                          noResultsMessage.style.display = 'block';
-                      } else {
-                          noResultsMessage.style.display = 'none';
-                          meals.forEach(meal => {
-                              const cardHtml = createMealCard(meal);
-                              mealsGrid.insertAdjacentHTML('beforeend', cardHtml);
-                          });
-                      }
-                  } catch (error) {
-                      console.error('Search error:', error);
-                      // Show no results if search fails
-                      document.getElementById('mealsGrid').innerHTML = '';
-                      noResultsMessage.style.display = 'block';
-                  }
-              }
-
-              async function clearSearch() {
-                  const searchInput = document.getElementById('searchInput');
-                  const clearButton = document.getElementById('clearSearch');
-
-                  searchInput.value = '';
-                  clearButton.style.display = 'none';
-
-                  // Show all meals
-                  await loadMealsFromDB();
-                  document.getElementById('noResultsMessage').style.display = 'none';
-                  searchInput.focus();
-              }
-
-              function handleImageCapture(input) {
-                  const button = document.getElementById('cameraButton');
-
-                  if (input.files && input.files[0]) {
-                      const fileName = input.files[0].name;
-                      button.innerHTML = `
-                          <div class="text-center">
-                              <i class="fas fa-check-circle fa-2x mb-2" style="color: var(--success-color);"></i>
-                              <div>תמונה נבחרה</div>
-                              <small>${fileName}</small>
-                          </div>
-                      `;
-                      button.classList.add('has-image');
-                  }
-              }
-
-          async function loadDayData() {
-          if (!db) return;
-
-          try {
-              // Calculate target date
-              const today = new Date();
-              let targetDate, pageIndex;
-              targetDate = today.toISOString().split('T')[0];
-              pageIndex = 1;
+      :root {
+        --primary-color: #FF6B6B;
+        --primary-dark: #FF5252;
+        --secondary-color: #4ECDC4;
+        --accent-color: #FFE66D;
+        --success-color: #6BCF7F;
+        --warning-color: #FF8A65;
+        --danger-color: #eeeeee;
+        --surface-color: #FFFFFF;
+        --background-color: #FAFAFA;
+        --on-surface: #2E2E2E;
+        --on-surface-variant: #5F6368;
+        --outline: #E0E0E0;
+        --shadow: rgba(0, 0, 0, 0.08);
+        --elevation-1: 0 1px 3px var(--shadow);
+        --elevation-2: 0 2px 8px var(--shadow);
+        --elevation-3: 0 4px 16px var(--shadow);
+        --border-radius: 16px;
+        --border-radius-sm: 12px;
+      }
+
+      body {
+        font-family: 'Assistant', 'Heebo', sans-serif;
+        direction: rtl;
+        text-align: right;
+        background-color: var(--background-color);
+        padding-bottom: 100px;
+        overflow-x: hidden;
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--on-surface);
+      }
+
+      .app-container {
+        display: flex;
+        overflow-x: hidden;
+        direction: rtl;
+        width: 100vw;
+        height: 100%;
+      }
+
+      .page {
+        flex: 0 0 100vw;
+        overflow-x: hidden;
+        min-height: calc(100vh - 100px);
+        touch-action: pan-y !important;
+        direction: rtl;
+      }
+
+      /* Header Styling */
+      .header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 0.5rem 0;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--elevation-2);
+      }
+
+      .header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        letter-spacing: -0.02em;
+      }
+
+      /* Meal Cards */
+      .meal-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none;
+        box-shadow: var(--elevation-1);
+        margin-bottom: 1.5rem;
+        cursor: pointer;
+        overflow: hidden;
+        border-radius: var(--border-radius);
+        background: var(--surface-color);
+      }
+
+      .meal-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--elevation-3);
+      }
+
+      .meal-card.expanded {
+        position: fixed;
+        width: 92%;
+        right: 4%;
+        top:5%;
+        z-index: 1002;
+        box-shadow: var(--elevation-3);
+        transform: none;
+      }
+  .popup-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    z-index: 1001;
  
-              // Get data from database
-              const [totals, meals] = await Promise.all([
-                  db.getDayTotals(targetDate),
-                  db.getDayMeals(targetDate)
-              ]);
+  }
 
-              // Find the target page element
-              const pageElement = document.querySelector(`.page:nth-child(${pageIndex + 1})`);
-              if (!pageElement) {
-                  console.error(`Page element not found for Today`);
-                  return;
-              }
+      .card-closed {
+        height: 150px;
+        position: relative;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        display: flex;
+        align-items: end;
+        border-radius: var(--border-radius);
+      }
 
-              // Update page header
-              const pageHeader = pageElement.querySelector('.header h1');
-              if (pageHeader) {
-                  pageHeader.innerHTML = `
-                      היום
-                  `;
-              }
+      .meal-card.expanded .card-closed {
+        height: 50vh;
+      }
 
-              // Update date header
-              /*const dateHeader = pageElement.querySelector('.date-header');
-              if (dateHeader) {
-                  const formattedDate = formatHebrewDate(targetDate);
-                  dateHeader.innerHTML = `
-                      <i class="fas fa-calendar me-2"></i>
-                      ${formattedDate}
-                  `;
-              }*/
+      .card-overlay {
+        background: linear-gradient(transparent, rgba(0,0,0,0.75));
+        width: 100%;
+        padding: 1rem;
+        color: white;
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+      }
 
-              // Update nutrition summary
-            // pageElement.querySelector('.daily-summary').innerHTML=""; //RESET DAILY DATA;
+      .meal-title {
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        letter-spacing: -0.01em;
+      }
+
+.meal-card.expanded .meal-title {
+  /* Your styles here */
+  font-size: 2rem;
+  margin-bottom:1.5rem;
+}
+
+.meal-card.expanded .usage-counter .calories-info
+
+{
+      font-size:1.25rem;.
+     
+}
+
+.meal-card.expanded .card-stats {
+   display:block;
+   margin-bottom:2rem;.
+}
+
+      .card-stats {
+        display: flex;
+        justify-content: flex-start;
+        font-size: 1rem;
+        font-weight: 500;
+        display:none;
+        margin-bottom:0px;
+      }
+
+      .calories-info {
+        background: rgba(255,255,255,0.25);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        backdrop-filter: blur(10px);
+        margin-left:1rem;
+      }
+
+      .usage-counter {
+        background: rgba(255,255,255,0.25);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        backdrop-filter: blur(10px);
             
-              const nutritionSummary = pageElement.querySelector('.nutrition-summary');
-              if (nutritionSummary) {
-                  const isOverGoal = totals.calories > db.DAILY_GOAL;
-
-                  // Update CSS classes for color coding
-                  if (isOverGoal) {
-                      nutritionSummary.classList.add('over-goal');
-                  } else {
-                      nutritionSummary.classList.remove('over-goal');
-                  }
-
-                  // Update nutrition content
-                  nutritionSummary.innerHTML = `
-                      <div class="nutrition-row">
-                          <span class="nutrition-label">
-                              קלוריות
-                          </span>
-                          <span class="nutrition-value ${isOverGoal ? 'over-goal' : ''}">${totals.calories} / ${db.DAILY_GOAL}</span>
-                      </div>
-                      <div class="nutrition-row">
-                          <span class="nutrition-label">
-                              פחמימות
-                          </span>
-                          <span class="nutrition-value">${totals.carbs} גרם</span>
-                      </div>
-                      <div class="nutrition-row">
-                          <span class="nutrition-label">
-                              חלבון
-                          </span>
-                          <span class="nutrition-value">${totals.protein} גרם</span>
-                      </div>
-                  `;
-              }
-
-              // Update meals list
-              const dailySummary = pageElement.querySelector('.daily-summary');
-              if (dailySummary) {
-                   // Remove existing meal items
-                  const existingMeals = dailySummary.querySelectorAll('.meal-item');
-                  existingMeals.forEach(item => item.remove());
-                  //dailySummary.innerHTML="";
-
-                  if (meals.length === 0) {
-                      // Show empty state
-                      const emptyState = document.createElement('div');
-                      emptyState.className = 'text-center py-4 text-muted';
-                      emptyState.innerHTML = `
-                          <div class="mb-3">
-                              <i class="fas fa-utensils fa-3x text-muted"></i>
-                          </div>
-                          <h5 class="text-muted">לא נרשמו ארוחות היום</h5>
-                          
-                      `;
-                      dailySummary.innerHTML=emptyState;
-                  } else {
-                      // Add meal items
-                      meals.forEach((meal, index) => {
-                          const mealItem = document.createElement('div');
-                          mealItem.className = 'meal-item';
-                          mealItem.style.animationDelay = `${index * 0.1}s`; // Stagger animation
-
-                          mealItem.innerHTML = `
-                              <div class="meal-item-header">
-                                  <span class="meal-name">${meal.mealName}</span>
-                                  <span class="meal-calories">
-                                      <i class="fas fa-fire me-1"></i>${meal.calories} קל'
-                                  </span>
-                                  <button 
-                                    class="btn btn-outline-danger btn-sm" 
-                                    onclick="deleteLoggedFood('${meal.id}', '${meal.mealName}')"
-                                    title="מחק רישום זה"
-                                    style="padding: 0.2rem 0.4rem; font-size: 0.7rem;">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                              </div>
-                              <div class="meal-time">
-                                  <i class="fas fa-clock me-1"></i>
-                                  ${meal.time} - ${getMealTypeInHebrew(meal.time)}
-                              </div>
-                              <div class="meal-nutrition mt-2">
-                                  <small class="text-muted">
-                                      <i class="fas fa-seedling me-1"></i>${meal.carbs}גרם פחמ' •
-                                      <i class="fas fa-dumbbell me-1"></i>${meal.protein}גרם חלבון
-                                  </small>
-                              </div>
-                          `;
-
-                          dailySummary.appendChild(mealItem);
-                      });
-
-                      // Add summary footer
-                      /*/const summaryFooter = pageElement.querySelector('.footer-summary');
-                      //summaryFooter.innerHTML="";
-                      //summaryFooter.className = 'mt-4 p-3 bg-light rounded text-center';
-                      summaryFooter.innerHTML = `
-                          <small class="text-muted">
-                              <strong>${meals.length}</strong> ארוחות נרשמו ${dayType === 'today' ? 'היום' : 'אתמול'}
-                          </small>
-                      `;
-                      dailySummary.appendChild(summaryFooter); */
-                  }
-              }
-
-              console.log(`✅ Loaded today data: ${totals.calories} calories, ${meals.length} meals`);
-
-          } catch (error) {
-              console.error(`❌ Error loading ${dayType} data:`, error);
-
-              // Show error state
-              //const pageElement = document.querySelector(`.page:nth-child(${dayType === 'today' ? 2 : 3})`);
-              //const dailySummary = pageElement?.querySelector('.daily-summary');
-              if (dailySummary) {
-                  dailySummary.innerHTML = `
-                      <div class="text-center py-4 text-danger">
-                          <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
-                          <div>שגיאה בטעינת נתונים</div>
-                          <small>נסה לרענן את הדף</small>
-                      </div>
-                  `;
-              }
-          }
-      }
-
-      // Helper function for Hebrew date formatting
-      function formatHebrewDate(dateString) {
-          const date = new Date(dateString);
-          const days = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
-          const months = [
-              'ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני',
-              'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'
-          ];
-
-          const dayName = days[date.getDay()];
-          const day = date.getDate();
-          const month = months[date.getMonth()];
-          const year = date.getFullYear();
-
-          return `יום ${dayName}, ${day} ${month} ${year}`;
-      }
-
-      // Helper function (already exists in your code)
-      function getMealTypeInHebrew(time) {
-          const hour = parseInt(time.split(':')[0]);
-
-          if (hour >= 5 && hour < 11) return 'ארוחת בוקר';
-          if (hour >= 11 && hour < 15) return 'ארוחת צהריים';
-          if (hour >= 15 && hour < 18) return 'חטיף אחר הצהריים';
-          if (hour >= 18 && hour < 22) return 'ארוחת ערב';
-          return 'חטיף';
-      }
-
-
-      async function resetDatabase() {
-          // Show confirmation dialog
-          const confirmed = confirm(
-              '⚠️ האם אתה בטוח שברצונך למחוק את כל הנתונים?\n\n' +
-              'פעולה זו תמחק:\n' +
-              '• את כל הארוחות בספרייה\n' +
-              '• את כל הרישומים של ארוחות שנאכלו\n' +
-              '• את כל הנתונים התזונתיים\n\n' +
-              'לא ניתן לבטל פעולה זו!'
-          );
-
-          if (!confirmed) return;
-
-          // Double confirmation for safety
-          const doubleConfirmed = confirm(
-              '🚨 אישור אחרון!\n\n' +
-              'לחץ OK כדי למחוק לצמיתות את כל הנתונים.\n' +
-              'לחץ Cancel כדי לבטל.'
-          );
-
-          if (!doubleConfirmed) return;
-
-          try {
-              // Show loading state
-              const resetBtn = document.getElementById('resetDatabaseBtn');
-              if (resetBtn) {
-                  resetBtn.disabled = true;
-                  resetBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>מוחק...';
-              }
-
-              // Clear all database data
-              await db.clearAllData();
-
-              // Reload the meals page to show empty state
-              await loadMealsFromDB();
-
-              // Show success message
-              alert('✅ כל הנתונים נמחקו בהצלחה!');
-
-              console.log('🔄 Database reset completed');
-
-          } catch (error) {
-              console.error('❌ Error resetting database:', error);
-              alert('❌ שגיאה במחיקת הנתונים. נסה שוב.');
-          } finally {
-              // Restore button state
-              const resetBtn = document.getElementById('resetDatabaseBtn');
-              if (resetBtn) {
-                  resetBtn.disabled = false;
-                  resetBtn.innerHTML = '<i class="fas fa-trash me-2"></i>מחק את כל הנתונים';
-              }
-          }
-      }
-      // Add this function to your main app
-      async function loadWeeklyOverview() {
-          if (!db) return;
-
-          try {
-              const weekData = [];
-              const today = new Date();
-
-              // Get data for the last 7 days
-              for (let i = 0; i < 7; i++) {
-                  const date = new Date(today);
-                  date.setDate(date.getDate() - i);
-                  const dateString = date.toISOString().split('T')[0];
-
-                  // Get day totals and meals from database
-                  const [totals, meals] = await Promise.all([
-                      db.getDayTotals(dateString),
-                      db.getDayMeals(dateString)
-                  ]);
-
-                  weekData.push({
-                      date: dateString,
-                      dateObj: date,
-                      meals: meals,
-                      totalCalories: totals.calories,
-                      totalCarbs: totals.carbs
-                  });
-              }
-
-              // Find the third page element (yesterday tab)
-              
-              const weeklyPage = document.querySelector('.page:nth-child(3)');
-              
-              if (!weeklyPage) return;
-          
-               weeklyPage.innerHTML= `
-                  <div class="header">
-                    <div class="container-fluid">
-                       <h1 class="h3 mb-0 text-center">
-                          <i class="fas fa-calendar-week me-2"></i>
-                           סקירה שבועית
-                       </h1>
-                     </div>
-                   </div>
-
-                   <div class="container-fluid px-3">
-                      <!-- Week Summary -->
-                      <div class="week-summary">
-                           <div class="summary-grid" id="weekSummary">
-                              ${createWeekSummary(weekData)}
-                          </div>
-                      </div>
-
-                      <!-- Daily Cards -->
-                      <div class="daily-cards" id="dailyCards">
-                          ${weekData.map((dayData, index) => createDayCard(dayData, index)).join('')}
-                      </div>
-                    </div>
-                  `;
-              
-
-              console.log('✅ Weekly overview loaded with real data');
-
-          } catch (error) {
-              console.error('❌ Error loading weekly overview:', error);
-
-              // Show error state
-              const weeklyPage = document.querySelector('.page:nth-child(3)');
-              const container = weeklyPage?.querySelector('.container-fluid');
-              if (container) {
-                  container.innerHTML = `
-                      <div class="text-center py-4 text-danger">
-                          <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
-                          <div>שגיאה בטעינת הסקירה השבועית</div>
-                          <small>נסה לרענן את הדף</small>
-                      </div>
-                  `;
-              }
-          }
-      }
-
-      // Helper functions (add these to your main app)
-      function getHebrewDayName(date) {
-          const days = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
-          return days[date.getDay()];
-      }
-
-      function getHebrewMonthName(date) {
-          const months = [
-              'ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני',
-              'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'
-          ];
-          return months[date.getMonth()];
-      }
-
-      function formatHebrewDate2(date, includeToday = true) {
-          const today = new Date();
-          const yesterday = new Date(today);
-          yesterday.setDate(yesterday.getDate() - 1);
-
-          if (includeToday && date.toDateString() === today.toDateString()) {
-              return 'היום';
-          } else if (includeToday && date.toDateString() === yesterday.toDateString()) {
-              return 'אתמול';
-          }
-
-          const dayName = getHebrewDayName(date);
-          const day = date.getDate();
-          const month = getHebrewMonthName(date);
-
-          return `יום ${dayName}, ${day} ${month}`;
-      }
-
-      function getCalorieStatus(calories) {
-          
-          if (calories <= db.DAILY_GOAL) return 'under';
-          if (calories <= db.DAILY_GOAL + 200) return 'over';
-          return 'way-over';
-      }
-
-      function createDayCard(dayData, index) {
-          
-          const status = getCalorieStatus(dayData.totalCalories);
-          const statusClass = status === 'under' ? '' : status === 'over' ? 'over-target' : 'way-over-target';
-
-          const mealsHtml = dayData.meals.length === 0 ?
-              '<div class="empty-day">לא נרשמו ארוחות ביום זה</div>' :
-              dayData.meals.map(meal => `
-                  <div class="meal-entry">
-                      <div class="meal-entry-info">
-                          <span class="meal-name">${meal.mealName}</span>
-                          <span class="meal-time">
-                              <i class="fas fa-clock me-1"></i>
-                              ${meal.time}  
-                          </span>
-                      </div>
-                      <span class="meal-calories">
-                          ${meal.calories} קל'
-                      </span>
-                  </div>
-              `).join('');
-
-          return `
-              <div class="day-card" onclick="toggleDayCard(this)" data-day-index="${index}">
-                  <div class="day-card-closed ${statusClass}">
-                      <div class="expand-icon">
-                          <i class="fas fa-chevron-down"></i>
-                      </div>
-
-                      <div class="day-header">
-                          <h5 class="day-title">${formatHebrewDate2(dayData.dateObj)}</h5>
-                      </div>
-
-                      <div class="nutrition-summary d-flex justify-content-evenly">
-                          <div class="nutrition-item">
-                              <span class="nutrition-value ${statusClass}">
-                                  ${dayData.totalCalories} קל'
-                              </span>
-                          </div>
-                          <div class="nutrition-item">
-                              <span class="nutrition-value">
-                                  ${dayData.totalCarbs} גרם פחמ'
-                              </span>
-                          </div>
-                          <div class="nutrition-item">
-                                <span class="nutrition-value">
-                                  ${dayData.meals.length} ארוחות
-                              </span>
-                          </div>
-                      </div>
-                  </div>
-
-                  <div class="day-details">
-                      <div class="day-details-content">
-                          <div class="meals-list">
-                              ${mealsHtml}
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          `;
-      }
-
-      function createWeekSummary(weekData) {
-         
-          // Filter to only days with meals logged
-          const daysWithMeals = weekData.filter(day => day.meals.length > 0);
-         
-          // Calculate metrics only for days with meals
-          const greenDays = daysWithMeals.filter(day => day.totalCalories > 100 && day.totalCalories <= db.DAILY_GOAL ).length;
-          const redDays = daysWithMeals.filter(day => day.totalCalories > db.DAILY_GOAL).length;
-          
-          // Average calories only for days with meals (avoid division by zero)
-          const avgCalories = daysWithMeals.length > 0 ? 
-              Math.round(daysWithMeals.reduce((sum, day) => sum + day.totalCalories, 0) / daysWithMeals.length) : 0;
-          
-          // Total meals across all days
-          const totalMeals = weekData.reduce((sum, day) => sum + day.meals.length, 0);
-
-          return `
-              <div class="summary-item">
-                  <div class="summary-number green-days">${greenDays}</div>
-                  <div class="summary-label">בטווח</div>
-              </div>
-              <div class="summary-item">
-                  <div class="summary-number red-days">${redDays}</div>
-                  <div class="summary-label">מעל יעד</div>
-              </div>
-              <div class="summary-item">
-                  <div class="summary-number avg-calories">${avgCalories}</div>
-                  <div class="summary-label">ממוצע קל'</div>
-              </div>
-              <div class="summary-item">
-                  <div class="summary-number">${totalMeals}</div>
-                  <div class="summary-label">ארוחות</div>
-              </div>
-          `;
-      }
-
-      function toggleDayCard(card) {
-          const details = card.querySelector('.day-details');
-          const icon = card.querySelector('.expand-icon i');
-
-          if (details.classList.contains('show')) {
-              details.classList.remove('show');
-              icon.classList.remove('fa-chevron-up');
-              icon.classList.add('fa-chevron-down');
-              card.classList.remove('expanded');
-          } else {
-              // Close all other cards
-              document.querySelectorAll('.day-details.show').forEach(detail => {
-                  detail.classList.remove('show');
-              });
-              document.querySelectorAll('.expand-icon i').forEach(expandIcon => {
-                  expandIcon.classList.remove('fa-chevron-up');
-                  expandIcon.classList.add('fa-chevron-down');
-              });
-              document.querySelectorAll('.day-card.expanded').forEach(expandedCard => {
-                  expandedCard.classList.remove('expanded');
-              });
-
-              // Open this card
-              details.classList.add('show');
-              icon.classList.remove('fa-chevron-down');
-              icon.classList.add('fa-chevron-up');
-              card.classList.add('expanded');
-          }
-      }
-
-      async function deleteLoggedFood(logId, mealName) {
-    // Show confirmation dialog
-    const confirmed = confirm(
-        `⚠️ האם אתה בטוח שברצונך למחוק את הרישום?\n\n` +
-        `"${mealName}"\n\n` +
-        `פעולה זו תמחק רק את הרישום הזה ולא את הארוחה מהספרייה.`
-    );
-    
-    if (!confirmed) return;
-    
-    try {
-        // Show loading state on delete button
-        const deleteBtn = document.querySelector(`[onclick="deleteLoggedFood('${logId}', '${mealName}')"]`);
-        if (deleteBtn) {
-            deleteBtn.disabled = true;
-            deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        }
-        
-        // Delete from database
-        await db.deleteLogEntry(logId);
-        
-        // Reload the current day data to refresh the UI
        
-            await loadDayData();
-        
-        
-        // Show success message in console
-        console.log(`✅ Deleted log entry: ${mealName}`);
-        
-    } catch (error) {
-        console.error('❌ Error deleting log entry:', error);
-        alert('❌ שגיאה במחיקת הרישום. נסה שוב.');
-        
-        // Restore button state on error
-        const deleteBtn = document.querySelector(`[onclick="deleteLoggedFood('${logId}', '${mealName}')"]`);
-        if (deleteBtn) {
-            deleteBtn.disabled = false;
-            deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
-        }
-    }
+      }
+
+      /* Card Details */
+      .card-details {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        background: var(--surface-color);
+      }
+
+      .card-details.show {
+        max-height: 600px;
+      }
+
+      .card-details-content {
+        padding: 2rem;
+      }
+
+      .ingredients-text {
+        font-size: 1.1rem;
+        color: var(--on-surface-variant);
+        line-height: 1.7;
+        margin-bottom: 2rem;
+        font-weight: 400;
+      }
+
+      .stats-badge {
+        font-size: 1rem;
+        padding: 0.75rem 1.25rem;
+        margin: 0.25rem;
+        border-radius: var(--border-radius-sm);
+        font-weight: 600;
+        letter-spacing: 0.01em;
+      }
+
+      .expand-icon {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        //background: rgba(255,255,255,0.9);
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: #eeeeee;
+        font-size: 1rem;
+        backdrop-filter: blur(10px);
+      }
+
+      .expand-icon.rotated {
+        transform: rotate(180deg);
+      }
+
+      /* Buttons */
+      .eat-now-btn {
+        width: 100%;
+        margin: 1rem 0;
+        padding: 1rem 2rem;
+        font-weight: 700;
+        font-size: 1.2rem;
+        border-radius: var(--border-radius-sm);
+        background: var(--primary-color);
+        border: none;
+        color: white;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        letter-spacing: 0.02em;
+      }
+
+      .eat-now-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--elevation-2);
+        color: white;
+      }
+
+      .btn-outline-danger {
+        border: 2px solid var(--danger-color);
+        color: var(--danger-color);
+        background: transparent;
+        font-weight: 600;
+        //padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius-sm);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .btn-outline-danger:hover {
+        background: var(--danger-color);
+        color: white;
+        transform: translateY(-1px);
+      }
+
+      /* Search */
+      .search-container {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: var(--background-color);
+        padding: 1rem 0;
+        margin: -1rem 0 2rem 0;
+      }
+
+      .search-container .form-control {
+        border: 2px solid var(--outline);
+        box-shadow: none;
+        border-radius: var(--border-radius-sm);
+        padding: 1rem 1.5rem;
+        font-size: 1.1rem;
+        background: var(--surface-color);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .search-container .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.1);
+        background: var(--surface-color);
+      }
+
+      .search-container .input-group-text {
+        border: 2px solid var(--outline);
+        border-left: none;
+        background: var(--surface-color);
+        padding: 1rem 1.5rem;
+        border-radius: var(--border-radius-sm) 0 0 var(--border-radius-sm);
+      }
+
+      /* Container */
+      .container-fluid {
+        max-width: 480px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+      }
+
+      /* Add Button */
+      .add-btn {
+        position: fixed;
+        bottom: 100px;
+        left: 1.5rem;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        box-shadow: var(--elevation-3);
+        z-index: 1000;
+        background: var(--accent-color);
+        border: none;
+        color: var(--on-surface);
+        font-size: 1.5rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .add-btn:hover {
+        transform: scale(1.1);
+        background: var(--accent-color);
+        color: var(--on-surface);
+      }
+
+      /* Bottom Navigation */
+      .bottom-tabs {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--surface-color);
+        border-top: 1px solid var(--outline);
+        box-shadow: 0 -4px 16px var(--shadow);
+        z-index: 1000;
+        height: 80px;
+      }
+
+      .tabs {
+        display: flex;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .tab {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: var(--on-surface-variant);
+        font-size: 0.9rem;
+        font-weight: 600;
+        padding: 1rem 0.5rem;
+        position: relative;
+      }
+
+      .tab.active {
+        color: var(--primary-color);
+        background: rgba(255, 107, 107, 0.08);
+      }
+
+      .tab.active::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--primary-color);
+        border-radius: 0 0 3px 3px;
+      }
+
+      .tab i {
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+      }
+
+      /* Daily Summary */
+      .daily-summary {
+        background: var(--surface-color);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--elevation-1);
+      }
+
+      .date-header {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        color: var(--on-surface);
+        letter-spacing: -0.01em;
+      }
+
+      .nutrition-summary {
+        display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 16px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  font-family: 'Roboto', sans-serif;
+  text-align: center;
+
+      }
+
+      .nutrition-summary.over-goal {
+        border-color: var(--danger-color);
+        background: rgba(240, 98, 146, 0.03);
+      }
+
+      .nutrition-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding: 0.5rem 0;
+      }
+
+      .nutrition-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .nutrition-label {
+        font-weight: 600;
+        font-size: 1.2rem;
+        color: var(--on-surface);
+        letter-spacing: 0.01em;
+      }
+
+      .nutrition-value {
+        font-weight: 300;
+        font-size: 1.5rem;
+        letter-spacing: -0.02em;
+        color: var(--success-color);
+      }
+
+      .nutrition-value.over-goal {
+        color: var(--danger-color);
+      }
+
+      /* Meal Items */
+      .meal-item {
+        background: var(--background-color);
+        border-radius: var(--border-radius-sm);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border-right: 4px solid var(--primary-color);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .meal-item:hover {
+        background: var(--surface-color);
+        box-shadow: var(--elevation-1);
+      }
+
+      .meal-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .meal-name {
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--on-surface);
+        letter-spacing: -0.01em;
+      }
+
+      .meal-calories {
+        font-size: 1.1rem;
+        color: var(--primary-color);
+        font-weight: 700;
+        background: rgba(255, 107, 107, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+      }
+
+      .meal-time {
+        font-size: 1rem;
+        color: var(--on-surface-variant);
+        font-weight: 500;
+      }
+
+      /* Modal Improvements */
+      .modal-content {
+        border-radius: var(--border-radius);
+        border: none;
+        box-shadow: var(--elevation-3);
+      }
+
+      .modal-header {
+        border-bottom: 1px solid var(--outline);
+        padding: 2rem;
+      }
+
+      .modal-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+
+      .modal-body {
+        padding: 2rem;
+      }
+
+      .form-control {
+        border: 2px solid var(--outline);
+        border-radius: var(--border-radius-sm);
+        padding: 1rem 1.5rem;
+        font-size: 1.1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.1);
+      }
+
+      .form-label {
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--on-surface);
+        margin-bottom: 0.75rem;
+      }
+
+      /* Camera Button */
+      .camera-btn {
+        width: 100%;
+        padding: 2rem;
+        border: 3px dashed var(--outline);
+        border-radius: var(--border-radius-sm);
+        background: var(--background-color);
+        color: var(--on-surface-variant);
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-align: center;
+      }
+
+      .camera-btn:hover {
+        border-color: var(--primary-color);
+        background: rgba(255, 107, 107, 0.03);
+        color: var(--primary-color);
+      }
+
+      .camera-btn.has-image {
+        border-color: var(--success-color);
+        background: rgba(107, 207, 127, 0.03);
+        color: var(--success-color);
+      }
+
+      /* No Results */
+      .no-results {
+        text-align: center;
+        color: var(--on-surface-variant);
+        padding: 4rem 2rem;
+        font-size: 1.2rem;
+      }
+
+      .no-results i {
+        font-size: 4rem;
+        margin-bottom: 2rem;
+        color: var(--outline);
+      }
+
+      /* Week Summary */
+      .week-summary {
+        background: var(--surface-color);
+        padding: 0rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 2rem;
+        box-shadow: var(--elevation-1);
+      }
+
+      .summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 16px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  font-family: 'Roboto', sans-serif;
+  text-align: center;
+  
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.summary-number {
+  font-size: 2.5rem;
+  font-weight: 300; /* Thin */
+  color: #212121;
+}
+
+.summary-label {
+  font-size: 0.85rem;
+  color: #757575;
+  margin-top: 4px;
 }
 
 
+      .green-days { color: var(--success-color); }
+      .red-days { color: var(--danger-color); }
+      .avg-calories { color: var(--primary-color); }
 
+      /* Day Cards */
+      .day-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none;
+        box-shadow: var(--elevation-1);
+        margin-bottom: 1.5rem;
+        cursor: pointer;
+        overflow: hidden;
+        border-radius: var(--border-radius);
+        background: var(--surface-color);
+      }
 
-              // Initialize app when page loads
-              document.addEventListener('DOMContentLoaded', initializeApp);
-    </script>
-  </body>
-</html>
+      .day-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--elevation-2);
+      }
+
+      .day-card.expanded {
+        transform: scale(1.02);
+        z-index: 10;
+        position: relative;
+        box-shadow: var(--elevation-3);
+      }
+
+      .day-card-closed {
+        padding: 2rem;
+        position: relative;
+        border-right: 6px solid var(--success-color);
+      }
+
+      .day-card-closed.over-target {
+        border-right-color: var(--warning-color);
+      }
+
+      .day-card-closed.way-over-target {
+        border-right-color: var(--danger-color);
+      }
+
+      .day-details {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        background: var(--background-color);
+      }
+
+      .day-details.show {
+        max-height: 600px;
+      }
+
+      .day-details-content {
+        padding: 2rem;
+        border-top: 1px solid var(--outline);
+      }
+
+      .meal-entry {
+        background: var(--surface-color);
+        padding: 1.5rem;
+        border-radius: var(--border-radius-sm);
+        border-right: 3px solid var(--primary-color);
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .meal-entry:hover {
+        box-shadow: var(--elevation-1);
+      }
+
+      .meal-entry-info .meal-name {
+        font-weight: 700;
+        color: var(--on-surface);
+        font-size: 1.1rem;
+        letter-spacing: -0.01em;
+      }
+
+      .meal-entry-info .meal-time {
+        color: var(--on-surface-variant);
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      .meal-entry .meal-calories {
+        color: var(--primary-color);
+        font-size: 1rem;
+        font-weight: 700;
+        white-space: nowrap;
+        background: rgba(255, 107, 107, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+      }
+
+      /* Typography Improvements */
+      h1, h2, h3, h4, h5, h6 {
+        letter-spacing: -0.02em;
+        font-weight: 700;
+      }
+
+      /* Reduce icon dependency */
+      .minimal-icon {
+        font-size: 0.9rem;
+        opacity: 0.7;
+        margin-left: 0.5rem;
+      }
+
+      /* Responsive adjustments 
+      @media (max-width: 480px) {
+        .container-fluid {
+          padding: 0 1rem;
+        }
+        
+        .card-overlay {
+          padding: 1.5rem;
+        }
+        
+        .meal-title {
+          font-size: 1.3rem;
+        }
+        
+        .calories-info {
+          font-size: 1rem;
+        }
+      }*/
+
+.camera-input {
+  display: none;
+}
+
+.meals-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.empty-day {
+  text-align: center;
+  color: var(--on-surface-variant);
+  padding: 2rem;
+}
+
+.meal-entry-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nutrition-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
