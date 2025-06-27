@@ -409,12 +409,16 @@
       }
 
       .nutrition-summary {
-        background: var(--surface-color);
-        border-radius: var(--border-radius-sm);
-        padding: 1rem;
-        margin-bottom: 0rem;
-        border: 3px solid var(--success-color);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 16px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  font-family: 'Roboto', sans-serif;
+  text-align: center;
+
       }
 
       .nutrition-summary.over-goal {
