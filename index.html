@@ -54,6 +54,9 @@
           <!-- Search Bar -->
           <div class="search-container mb-3">
             <div class="input-group">
+              <span class="input-group-text bg-white border-end-0">
+                <i class="fas fa-search text-muted minimal-icon"></i>
+              </span>
               <input
                 type="text"
                 class="form-control border-start-0 ps-0"
@@ -104,8 +107,25 @@
               יום ראשון, 22 יוני 2025
             </div> -->
 
-            <div class="nutrition-summary" id="daySummary">
-              
+            <div class="nutrition-summary over-goal">
+              <div class="nutrition-row">       
+                <div class="nutrition-value over-goal">1,700</div>
+                <div class="nutrition-label">
+                  קלוריות
+                </div>
+              </div>
+              <div class="nutrition-row">
+                 <div class="nutrition-value">80</div>
+                 <div class="nutrition-label">
+                  פחמימות
+                </div>
+              </div>
+              <div class="nutrition-row">
+                 <div class="nutrition-value">80</div>
+                 <div class="nutrition-label">
+                  חלבונים
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1080,9 +1100,20 @@ async function deleteMeal(mealId, mealName) {
                   `;
               }
 
-          
+              // Update date header
+              /*const dateHeader = pageElement.querySelector('.date-header');
+              if (dateHeader) {
+                  const formattedDate = formatHebrewDate(targetDate);
+                  dateHeader.innerHTML = `
+                      <i class="fas fa-calendar me-2"></i>
+                      ${formattedDate}
+                  `;
+              }*/
+
+              // Update nutrition summary
+            // pageElement.querySelector('.daily-summary').innerHTML=""; //RESET DAILY DATA;
             
-              const nutritionSummary = document.getElementById("daySummary");
+              const nutritionSummary = pageElement.querySelector('.nutrition-summary');
               if (nutritionSummary) {
                   const isOverGoal = totals.calories > db.DAILY_GOAL;
 
@@ -1095,32 +1126,20 @@ async function deleteMeal(mealId, mealName) {
 
                   // Update nutrition content
                   nutritionSummary.innerHTML = `
-                      <div class="summary-item">
-                          <div class="summary-number ${isOverGoal ? 'over-goal' : ''}">
-                          ${totals.calories} 
-                          </div>
-                          <div class="summary-label">
-                              מתוך  ${db.DAILY_GOAL}
+                      <div class="nutrition-row">
+                          <div class="nutrition-value ${isOverGoal ? 'over-goal' : ''}">${totals.calories}</div>
+                          <div class="nutrition-label">
+                          ${db.DAILY_GOAL }מתוך 
                           </div>
                          
                       </div>
-                      <div class="summary-item">
-                          <div class="summary-number">
-                          ${totals.carbs}
-                          </div>
-                          <div class="summary-label">
-                          פחמימות
-                          </div>
-                          
+                      <div class="nutrition-row">
+                          <div class="nutrition-value">${totals.carbs}</div>
+                          <div class='nutrition-label'>פחמימות</div>
                       </div>
-                      <div class="summary-item">
-                              <div class="summary-number">
-                          ${totals.protein}
-                          </div>
-                          <div class="summary-label">
-                          חלבונים
-                          </div>
-               
+                      <div class="nutrition-row">
+                          <div class="nutrition-value">${totals.protein}</div>
+                          <div class='nutrition-label'>חלבונים</div>
                       </div>
                   `;
               }
@@ -1152,7 +1171,7 @@ async function deleteMeal(mealId, mealName) {
                           mealItem.className = 'meal-item';
                           mealItem.style.animationDelay = `${index * 0.1}s`; // Stagger animation
 
-                          mealItem.innerHTML = `
+                           mealItem.innerHTML = `
                               <div class="meal-item-header">
                                   <span class="meal-time">${meal.time}</span>
                                   <span class="meal-name">${meal.mealName}</span>
@@ -1177,7 +1196,17 @@ async function deleteMeal(mealId, mealName) {
                           dailySummary.appendChild(mealItem);
                       });
 
-                                       }
+                      // Add summary footer
+                      /*/const summaryFooter = pageElement.querySelector('.footer-summary');
+                      //summaryFooter.innerHTML="";
+                      //summaryFooter.className = 'mt-4 p-3 bg-light rounded text-center';
+                      summaryFooter.innerHTML = `
+                          <small class="text-muted">
+                              <strong>${meals.length}</strong> ארוחות נרשמו ${dayType === 'today' ? 'היום' : 'אתמול'}
+                          </small>
+                      `;
+                      dailySummary.appendChild(summaryFooter); */
+                  }
               }
 
               console.log(`✅ Loaded today data: ${totals.calories} calories, ${meals.length} meals`);
