@@ -666,61 +666,93 @@ This IS PAGE
 
 
 
-              async function calcNewMeal()
-              {
-                // Fill with ChatGPT API
-              const BACKEND_URL = 'https://openai-backend-k753.onrender.com/ask';
-                  const input = document.getElementById('ingredients').value.trim();
+            /* ----------------------------------------------------------
+   Central configuration – put this near the top of your main
+   script (or import from a separate config.js).
+---------------------------------------------------------- */
+const CONFIG = {
+  AI_ENDPOINT: 'https://openai-backend-k753.onrender.com/ask'
+};
 
-            if (!input) {
-              alert('no input');
-              return;
-            }
+/* ----------------------------------------------------------
+   Nutrition-AI helper – keeps fetch logic out of the UI code.
+---------------------------------------------------------- */
+async function estimateNutrition(ingredientsText) {
+  const prompt = `
+    הערך התזונתי של הארוחה הבאה: ${ingredientsText}.
+    החזר רק שלושה מספרים מופרדים בפסיקים –
+    קלוריות, פחמימות בגרם, חלבון בגרם.
+    למשל: 450, 12, 22
+    ללא טקסט נוסף.
+  `.trim();
 
-            const question = `
-      הערך התזונתי של הארוחה הבאה: ${input}.
-      החזר רק את שלושת המספרים, מופרדים בפסיקים:
-      קלוריות, פחמימות בגרם, חלבון בגרם.
-      למשל: 450, 12, 22
-      ללא טקסט נוסף.
-            `.trim();
+  const res = await fetch(CONFIG.AI_ENDPOINT, {
+    method : 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body   : JSON.stringify({ question: prompt })
+  });
 
-            try {
-              const response = await fetch(BACKEND_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question })
-              });
+  if (!res.ok) {
+    const { error, detail } = await res.json().catch(() => ({}));
+    throw new Error(error || detail || `HTTP ${res.status}`);
+  }
 
-              const data = await response.json();
+  const data = await res.json();
 
-              if (response.ok) {
-                const match = data.answer?.trim().match(/(\d+)[, ]+(\d+)[, ]+(\d+)/);
-                if (match) {
-                  const [_, cal, carbs, protein] = match;
-                  document.getElementById('calories').value = cal;
-                  document.getElementById('carbs').value = carbs;
-                  document.getElementById('protein').value = protein;
+  /*  Two supported response shapes:
+        1. { calories:123, carbs:12, protein:22 }
+        2. { answer: "123, 12, 22" }
+  */
+  if (typeof data.calories === 'number') {
+    return data;                // shape #1
+  }
 
-              //alert("cal:"+cal+" | carbs: "+carbs +" protein:" + protein);
+  const match = (data.answer || '').match(/([\d.]+)[, ]+([\d.]+)[, ]+([\d.]+)/);
+  if (!match) throw new Error('תבנית תשובה לא נתמכת');
 
-                } else {
-                  alert('לא התקבלה תשובה מתאימה.');
-                }
-              } else {
-                  alert(data.error+"/n"+data.detail);
-                /*resultDiv.innerHTML = `
-                  <div class="text-danger">
-                    <strong>שגיאה:</strong> ${data.error}<br>
-                    <strong>פרטים:</strong> ${data.detail}<br>
-                    <strong>הצעה:</strong> ${data.suggestion || 'נסה שוב מאוחר יותר'}
-                  </div>
-                `;*/
-              }
-            } catch (err) {
-              //resultDiv.innerHTML = `<span class="text-danger">שגיאת רשת: ${err.message}</span>`;
-            }
-          }
+  return {
+    calories: parseFloat(match[1]),
+    carbs   : parseFloat(match[2]),
+    protein : parseFloat(match[3])
+  };
+}
+
+/* ----------------------------------------------------------
+   calcNewMeal – UI layer: disables button, calls helper,
+   fills the form, and always restores state.
+---------------------------------------------------------- */
+async function calcNewMeal(btnEl = document.activeElement) {
+  const ingredients = document.getElementById('ingredients').value.trim();
+  if (!ingredients) { alert('אין מרכיבים'); return; }
+
+  // fall-back in case function called from inline onclick
+  if (!btnEl || !btnEl.classList.contains('btn')) {
+    btnEl = document.querySelector('#addMealModal .btn-success');
+  }
+
+  /* ----- loading state ----- */
+  const originalHTML = btnEl.innerHTML;
+  btnEl.innerHTML   = '<i class="fas fa-spinner fa-spin me-1"></i> מחשב...';
+  btnEl.disabled    = true;
+
+  try {
+    const { calories, carbs, protein } = await estimateNutrition(ingredients);
+
+    /*  populate inputs  */
+    document.getElementById('calories').value = calories;
+    document.getElementById('carbs').value    = carbs;
+    document.getElementById('protein').value  = protein;
+
+  } catch (err) {
+    console.error(err);
+    alert(`❌ שגיאה בחישוב הערכים:\n${err.message}`);
+  } finally {
+    /* ----- restore button ----- */
+    btnEl.innerHTML = originalHTML;
+    btnEl.disabled  = false;
+  }
+}
+
 
 async function deleteMeal(mealId, mealName) {
     // Show confirmation dialog
