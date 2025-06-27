@@ -1348,8 +1348,7 @@ async function deleteMeal(mealId, mealName) {
                   <div class="header">
                     <div class="container-fluid">
                        <h1 class="h3 mb-0 text-center">
-                          <i class="fas fa-calendar-week me-2"></i>
-                           סקירה שבועית
+                                 סקירה שבועית
                        </h1>
                      </div>
                    </div>
@@ -1500,17 +1499,16 @@ async function deleteMeal(mealId, mealName) {
 
           return `
               <div class="summary-item">
+                  <div class="summary-number">${totalMeals}</div>
+                  <div class="summary-label">ארוחות</div>
+              </div>
+              <div class="summary-item">
                   <div class="summary-number green-days">${greenDays}</div>
                   <div class="summary-label">בטווח</div>
               </div>
               <div class="summary-item">
                   <div class="summary-number red-days">${redDays}</div>
                   <div class="summary-label">מעל יעד</div>
-              </div>
-           
-              <div class="summary-item">
-                  <div class="summary-number">${totalMeals}</div>
-                  <div class="summary-label">ארוחות</div>
               </div>
                <div class="summary-item">
                   <div class="summary-number avg-calories">${avgCalories}</div>
