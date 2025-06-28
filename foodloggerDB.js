@@ -122,8 +122,8 @@ class FoodLoggerDB {
             'readwrite'
         );
         await new Promise((resolve, reject) => {
-            const updateMeal = transaction.objectStore('meals').put(meal);
-            const addLog = transaction.objectStore('dailyLogs').add(log);
+            transaction.objectStore('meals').put(meal);
+            transaction.objectStore('dailyLogs').add(log);
 
             transaction.oncomplete = () => resolve();
             transaction.onerror = () => reject(transaction.error);
@@ -210,8 +210,8 @@ class FoodLoggerDB {
                 'readwrite'
             );
 
-            const clearMeals = transaction.objectStore('meals').clear();
-            const clearLogs = transaction.objectStore('dailyLogs').clear();
+            transaction.objectStore('meals').clear();
+            transaction.objectStore('dailyLogs').clear();
 
             transaction.oncomplete = () => {
                 console.log('✅ All database data cleared');
@@ -302,3 +302,5 @@ class FoodLoggerDB {
         });
     }
 }
+
+
