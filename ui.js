@@ -260,7 +260,7 @@ async function loadDayData() {
                                           </button>
                                         </div>
 
-                                        <div class="meal-nutrition mt-2">
+                                        <div class="meal-nutrition mt-2 ${meal.isQuick ? 'fas fa-bolt fa-2xs' : ''}"">
                                             <small class="text-muted">
 
                                                ${meal.calories} קלוריות | ${meal.carbs} פחמימות | ${meal.protein} חלבונים
@@ -383,8 +383,8 @@ function createDayCard(dayData, index) {
     const mealsHtml = dayData.meals.length === 0 ?
         '<div class="empty-day">לא נרשמו ארוחות ביום זה</div>' :
         dayData.meals.map(meal => `
-                            <div class="meal-entry">
-                                <div class="weekday-meal-time">
+                            <div class="meal-entry ${meal.isQuick ? 'fas fa-bolt fa-2xs' : ''}">
+                                <div class="weekday-meal-time"> 
 
 
                                         ${meal.time}
