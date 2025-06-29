@@ -386,16 +386,13 @@ function createDayCard(dayData, index) {
     const mealsHtml = dayData.meals.length === 0 ?
         '<div class="empty-day">לא נרשמו ארוחות ביום זה</div>' :
         dayData.meals.map(meal => `
-                            <div class="meal-entry ${meal.isQuick ? 'fas fa-bolt fa-2xs' : ''}">
+                            <div class="meal-entry">
                                 <div class="weekday-meal-time"> 
-
-
                                         ${meal.time}
-
                                 </div>
                                 <span class="weekday-meal-name">${meal.mealName}</span>
                                 <span class="weekday-meal-calories">  ${meal.calories}</span>
-
+<span class="${meal.isQuick ? 'fas fa-bolt fa-2xs' : ''}"></span>
                             </div>
                         `).join('');
 
