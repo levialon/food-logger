@@ -251,19 +251,22 @@ async function loadDayData() {
                                             <span class="meal-time">${meal.time}</span>
                                             <span class="meal-name" >${meal.mealName}</span>
 
-                                            <button
+                                            
+                                          <span class="${meal.isQuick ? 'fas fa-bolt' : ''}" style="margin-inline-start: auto;">
+                                          <button
                                               class="btn btn-outline-danger btn-sm"
                                               onclick="deleteLoggedFood('${meal.id}', '${meal.mealName}')"
                                               title="מחק רישום זה"
-                                              style="padding: 0.2rem 0.4rem; font-size: 0.7rem; margin-inline-start: auto;">
-                                              <i class="fas fa-times"></i>
+                                              style="padding: 0.2rem 0.4rem; font-size: 0.7rem; border-color:rgb(46, 46, 46); color:rgb(46, 46, 46);">
+                                              מחק
                                           </button>
+                                          </span>
                                         </div>
 
-                                        <div class="meal-nutrition mt-2 ${meal.isQuick ? 'fas fa-bolt fa-2xs' : ''}"">
+                                        <div class="meal-nutrition mt-2"">
                                             <small class="text-muted">
-
                                                ${meal.calories} קלוריות | ${meal.carbs} פחמימות | ${meal.protein} חלבונים
+                                               
                                             </small>
                                         </div>
                                     `;
