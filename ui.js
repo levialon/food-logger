@@ -436,7 +436,7 @@ function createWeekSummary(weekData) {
     const daysWithMeals = weekData.filter(day => day.meals.length > 0 && day.totalCalories > 500);
 
     // Calculate metrics only for days with meals
-    const greenDays = daysWithMeals.filter(day.totalCalories <= db.DAILY_GOAL ).length;
+    const greenDays = daysWithMeals.filter(day => day.totalCalories <= db.DAILY_GOAL ).length;
     const redDays = daysWithMeals.filter(day => day.totalCalories > db.DAILY_GOAL).length;
 
     // Average calories only for days with meals (avoid division by zero)
