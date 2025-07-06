@@ -261,7 +261,7 @@ async function eatNow(event, mealId, mealName, calories) {
     try {
         // Show loading state
         const btn = event.target;
-        const originalText = btn.innerHTML;
+        //const originalText = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>מוסיף...';
         btn.disabled = true;
 
@@ -269,14 +269,14 @@ async function eatNow(event, mealId, mealName, calories) {
         const logEntry = await db.eatMeal(mealId);
 
         // Show success state
-        btn.innerHTML = '<i class="fas fa-check me-2"></i>נוסף!';
+        btn.innerHTML = 'ארוחה נוספה';
         btn.style.background = '#28a745';
 
 
 
         console.log(`✅ Logged: ${mealName} (${calories} calories) at ${logEntry.time}`);
 
-        // Reset button after 2 seconds
+        // Reset button after 1 seconds
         setTimeout(async () => {
             // btn.innerHTML = originalText;
             // btn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
