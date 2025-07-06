@@ -1,3 +1,4 @@
+// UI UTILS FOR FOODLOGGER SEVENDAYS
 // Load meals from database and display in UI
 async function loadMealsFromDB() {
     try {
@@ -229,7 +230,7 @@ async function loadDayData() {
             if (meals.length === 0) {
                 // Show empty state
                 const emptyState = document.createElement('div');
-                emptyState.className = 'text-center py-4 text-muted';
+                emptyState.className = 'meal-item text-center py-4 text-muted';
                 emptyState.innerHTML = `
                                     <div class="mb-3">
                                         <i class="fas fa-utensils fa-3x text-muted"></i>
@@ -237,7 +238,7 @@ async function loadDayData() {
                                     <h5 class="text-muted">לא נרשמו ארוחות היום</h5>
 
                                 `;
-                dailySummary.innerHTML=emptyState.innerHTML;
+                dailySummary.append(emptyState);
             } else {
                 // Add meal items
                 meals.forEach((meal, index) => {
@@ -408,7 +409,9 @@ function createDayCard(dayData, index) {
                                     <div class="weekday-item ${statusClass}">
                                           <div class="weekday-date"> ${formatHebrewDate2(dayData.dateObj)}</div>
                                           <strong>${dayData.totalCalories}</strong>
-                                          קלוריות ב-
+                                          קלוריות ו-
+                                          <strong>${dayData.totalCarbs}</strong>
+                                          פחמימות ב-
                                           <strong>${dayData.meals.length}</strong>
                                             ארוחות
                                     </div>
@@ -433,12 +436,12 @@ function createWeekSummary(weekData) {
     const daysWithMeals = weekData.filter(day => day.meals.length > 0);
 
     // Calculate metrics only for days with meals
-    const greenDays = daysWithMeals.filter(day => day.totalCalories > 100 && day.totalCalories <= db.DAILY_GOAL ).length;
+    const greenDays = daysWithMeals.filter(day => day.totalCalories > 500 && day.totalCalories <= db.DAILY_GOAL ).length;
     const redDays = daysWithMeals.filter(day => day.totalCalories > db.DAILY_GOAL).length;
 
     // Average calories only for days with meals (avoid division by zero)
-    const avgCalories = daysWithMeals.length > 0 ?
-        Math.round(daysWithMeals.reduce((sum, day) => sum + day.totalCalories, 0) / daysWithMeals.length) : 0;
+    const avgCalories = greenDays.length > 0 ?
+        Math.round(greenDays.reduce((sum, day) => sum + day.totalCalories, 0) / greenDays.length) : 0;
 
     // Total meals across all days
     const totalMeals = weekData.reduce((sum, day) => sum + day.meals.length, 0);
