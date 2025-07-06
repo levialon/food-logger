@@ -433,15 +433,15 @@ function createDayCard(dayData, index) {
 function createWeekSummary(weekData) {
 
     // Filter to only days with meals logged
-    const daysWithMeals = weekData.filter(day => day.meals.length > 0);
+    const daysWithMeals = weekData.filter(day => day.meals.length > 0 && day.totalCalories > 500);
 
     // Calculate metrics only for days with meals
-    const greenDays = daysWithMeals.filter(day => day.totalCalories > 500 && day.totalCalories <= db.DAILY_GOAL ).length;
+    const greenDays = daysWithMeals.filter(day.totalCalories <= db.DAILY_GOAL ).length;
     const redDays = daysWithMeals.filter(day => day.totalCalories > db.DAILY_GOAL).length;
 
     // Average calories only for days with meals (avoid division by zero)
-    const avgCalories = greenDays.length > 0 ?
-        Math.round(greenDays.reduce((sum, day) => sum + day.totalCalories, 0) / greenDays.length) : 0;
+    const avgCalories = daysWithMeals.length > 0 ?
+        Math.round(daysWithMeals.reduce((sum, day) => sum + day.totalCalories, 0) / daysWithMeals.length) : 0;
 
     // Total meals across all days
     const totalMeals = weekData.reduce((sum, day) => sum + day.meals.length, 0);
